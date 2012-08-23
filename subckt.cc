@@ -18,7 +18,7 @@ SubCkt::SubCkt(const Circuit& ckt, unsigned int node) : _ckt(ckt) {
 	grow(node);
 }
 
-std::string SubCkt::save() {
+std::string SubCkt::save() const {
 	// dump the subckt to a space-separated file, followed by a newline.
 	std::stringstream ofile;
 	if (_subckt->size() > 0) {
@@ -47,10 +47,6 @@ void SubCkt::load(const std::string& memfile) {
 SubCkt::~SubCkt() {
 	delete _levels;
 	delete _subckt;
-}
-void SubCkt::add(const Circuit& ckt, const int& n) {
-//	_levels->at(ckt.at(n).level) += 1;
-	_subckt->push_back(n);
 }
 void SubCkt::levelize() {
 	delete _levels;
@@ -93,19 +89,6 @@ void SubCkt::grow_recurse_forward(unsigned int node) {
 	}
 }
 
-int SubCkt::at(unsigned int n) {
-	return this->_subckt->at(n);
-}
-int SubCkt::levels() {
-	return _levels->size() - 1;
-}
-int SubCkt::levelsize(unsigned int n) {
-	if (n < this->_levels->size()) {
-		return this->_levels->at(n);
-	} else {
-		return 0;
-	}
-}
 
 int* SubCkt::flat() {
 	int* z = new int[_subckt->size()+1];
@@ -124,13 +107,9 @@ const SubCkt SubCkt::operator/(const SubCkt& b) const {
 	}
 	return sc;
 }
-int SubCkt::in(unsigned int tgt) {
+int SubCkt::in(unsigned int tgt) const {
 	std::vector<int>::iterator is = find(_subckt->begin(), _subckt->end(), tgt);
-	if (is == _subckt->end()) {
-		return -1;
-	} else {
-		return std::distance(_subckt->begin(), is);
-	}
+	return (is == _subckt->end() ? -1 : std::distance(_subckt->begin(),is));
 }
 SubCkt::SubCkt(const SubCkt& other) : _ckt(other._ckt){
 	_levels = new std::vector<int>();

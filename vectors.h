@@ -9,3 +9,4 @@
 
 std::pair<size_t, size_t> get_vector_dim(char* fvec);
 int read_vectors(GPU_Data& pack, char* fvec, int chunksize);
+int read_vectors(CPU_Data& pack, char* fvec, int chunksize);

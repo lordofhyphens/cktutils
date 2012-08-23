@@ -20,21 +20,22 @@ class SubCkt {
 		void grow_recurse_forward(unsigned int node);
 	public:	
 		~SubCkt();
-		std::string save();
+		std::string save() const;
 		void load(const std::string& memfile);
 		SubCkt(const Circuit& ckt);
 		SubCkt(const SubCkt&);
 		SubCkt(const Circuit& ckt, unsigned int node);
 		void add(const int& n) { add(this->_ckt, n);}
-		void add(const Circuit&, const int&);
+		void add(const Circuit& ckt, const int& n) { _subckt->push_back(n); }
 		void copy();
 		void clear();
 		int* gpu() { return this->_gpu;}
-		int at(unsigned int);
-		int in(unsigned int);
-		int levelsize(unsigned int);
-		int levels();
-		int size() { return this->_subckt->size();}
+		int in(unsigned int) const;
+		inline int levels() const { return _levels->size() - 1; }
+		inline int levelsize(const unsigned int n) const { return ( n < _levels->size() ? _levels->at(n) : 0); }
+		inline int at(const unsigned int n) const { return _subckt->at(n); }
+
+		int size() const { return this->_subckt->size();}
 		std::vector<int>& subckt() const { return *_subckt; }
 		const SubCkt operator/(const SubCkt& b) const; // intersection
 		SubCkt& operator=(const SubCkt&);
