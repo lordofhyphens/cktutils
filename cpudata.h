@@ -11,24 +11,25 @@
 #include <sstream>
 #include <stdexcept>
 #include <algorithm>
+#include <stdint.h>
 class CPU_Data {
     protected:
-		std::vector<ARRAY2D<char> >* _data; // variable size CPU memory space.
+		std::vector<ARRAY2D<uint8_t> >* _data; // variable size CPU memory space.
 		size_t _width, _height;
 		int _current; // current chunk on GPU.
     public:
-		size_t height() { return this->_height;}
-		size_t width() { return this->_width;}
-		size_t size() { return this->_data->size();}
+		size_t height() const { return this->_height;}
+		size_t width() const { return this->_width;}
+		size_t size() const { return this->_data->size();}
 		int initialize(size_t, size_t);
         CPU_Data();
         CPU_Data(size_t, size_t);
         ~CPU_Data();
-        std::string debug();
-		int current();
-		std::string print(); 
-		ARRAY2D<char> cpu(int ref); // this will throw an out_of_range exception if ref > size
-		ARRAY2D<char> cpu() { return cpu(this->_current);} // gets the CPU value for current;
+        std::string debug() const;
+		int current() const;
+		std::string print() const; 
+		ARRAY2D<uint8_t> cpu(int ref) const { return this->_data->at(ref); }
+		ARRAY2D<uint8_t> cpu() const { return cpu(this->_current);} // gets the CPU value for current;
 };
 
 #endif // CPUDATA_H
