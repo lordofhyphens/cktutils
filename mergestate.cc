@@ -24,5 +24,11 @@ void merge_save(const char* filename, const uint32_t* src, const size_t width) {
 	merge_write(out, src, width);
 	fclose(out);
 }
+void merge_save(const char* filename, const std::vector<uint32_t*>& src, const std::vector<SubCkt>& sckts) {
+	FILE* out = fopen(filename, "wb");
+	merge_header(out, 1);
+	merge_write(out, src, width);
+	fclose(out);
+}
 void merge_load() {
 }
