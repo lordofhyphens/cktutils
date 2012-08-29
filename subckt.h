@@ -44,7 +44,7 @@ class SubCkt {
 		inline int levelsize(const unsigned int n) const { return ( n < _levels->size() ? _levels->at(n) : 0); }
 		inline int ref(const unsigned int n) const { return _subckt->at(n); }
 		// Read-only copy of a NODEC.
-		inline NODEC& at(const unsigned int n) const { return _ckt.at(at(n)); }
+		inline NODEC& at(const unsigned int n) const { return _ckt.at(ref(n)); }
 
 		int size() const { return this->_subckt->size();}
 		std::vector<int>& subckt() const { return *_subckt; }
