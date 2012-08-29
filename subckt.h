@@ -5,6 +5,15 @@
 #include <string>
 #include <iterator>
 #include "ckt.h"
+
+/* SubCkt class
+ *
+ * Representation of a list of (nominally connected) nodes in a related
+ * Circuit, with additional functions to create one from a single node.
+ * Functions of note:
+ * at() returns an integer index for given node w/r/t the related Circuit.
+ */
+
 class SubCkt { 
 	private:
 		const Circuit& _ckt;
@@ -33,7 +42,9 @@ class SubCkt {
 		int in(unsigned int) const;
 		inline int levels() const { return _levels->size() - 1; }
 		inline int levelsize(const unsigned int n) const { return ( n < _levels->size() ? _levels->at(n) : 0); }
-		inline int at(const unsigned int n) const { return _subckt->at(n); }
+		inline int ref(const unsigned int n) const { return _subckt->at(n); }
+		// Read-only copy of a NODEC.
+		inline NODEC& at(const unsigned int n) const { return _ckt.at(at(n)); }
 
 		int size() const { return this->_subckt->size();}
 		std::vector<int>& subckt() const { return *_subckt; }
