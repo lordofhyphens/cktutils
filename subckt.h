@@ -43,8 +43,16 @@ class SubCkt {
 		inline int levels() const { return _levels->size() - 1; }
 		inline int levelsize(const unsigned int n) const { return ( n < _levels->size() ? _levels->at(n) : 0); }
 		inline int ref(const unsigned int n) const { return _subckt->at(n); }
+		inline int reverse_ref(const unsigned int n, const unsigned int g) const { 
+			std::vector<int>::iterator a = std::find(_subckt->begin(), _subckt->begin()+g,n);
+			if (a < _subckt->begin()+g)
+				return std::distance(_subckt->begin(), a); 
+			else 
+				return size()+1;
+		}
 		// Read-only copy of a NODEC.
 		inline NODEC& at(const unsigned int n) const { return _ckt.at(ref(n)); }
+		inline const Circuit& ckt() const { return _ckt; }
 
 		int size() const { return this->_subckt->size();}
 		std::vector<int>& subckt() const { return *_subckt; }
