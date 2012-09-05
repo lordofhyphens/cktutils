@@ -11,7 +11,7 @@
 	#include <fstream>
 	#define DPRINT(...) fprintf(stderr, __VA_ARGS__)
 #endif // DPRINT definition
-
+#define LOGEXEC 
 #ifdef NDEBUG 
 	#define GPRINT(A, ...) 
 #else

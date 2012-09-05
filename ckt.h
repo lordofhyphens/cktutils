@@ -11,6 +11,7 @@
 #include <cassert>
 #include <utility>
 #include "defines.h"
+#include <stdint.h>
 
 #define FBENCH 1 // iscas89 BENCH format.
 // NODE TYPE CONSTANTS 
@@ -73,9 +74,9 @@ class Circuit {
 		void read_bench(const char* benchfile);
 		void print() const;
 		NODEC& at(int node) const { return this->graph->at(node);}
-		inline int levels() const { return this->_levels;}
+		inline size_t levels() const { return this->_levels;}
 		int levelsize(int) const;
-		int size() const { return this->graph->size();}
+		size_t size() const { return this->graph->size();}
 		void save(const char*); // save a copy of the circuit in its current levelized form
 		void load(const char* memfile); // load a circuit that has been levelized.
 };
