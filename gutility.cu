@@ -8,6 +8,10 @@ ARRAY2D<int32_t> gpuAllocateBlockResults(size_t height) {
 	cudaMemset(tgt, -1, sizeof(int)*height);
 	return ARRAY2D<int32_t>(tgt, 1, height, sizeof(int32_t)*height);
 }
+void checkCudaError(const char* file, int line) {
+	cudaError_t err = cudaGetLastError();
+	if (err != cudaSuccess) { DPRINT("Error %s : before %s:%d\n", cudaGetErrorString(err),file,line);}
+}
 void selectGPU() {
 	int num_devices, device;
 	cudaGetDeviceCount(&num_devices);
@@ -35,4 +39,27 @@ int gpuCalculateSimulPatterns(int lines, int patterns) {
 	// added a buffer 	
 	allowed_patterns = (free_mem + (lines*sizeof(int))) / (lines*(sizeof(uint32_t)*2.5) + sizeof(uint8_t)*1.5);
 	return min(patterns, allowed_patterns -(allowed_patterns % 32));
+}
+std::string gpuMemCheck(){
+	size_t free_mem, total_mem;
+	std::stringstream temp;
+	cudaMemGetInfo(&free_mem, &total_mem);
+	temp << free_mem;
+	return temp.str();
+}
+
+int** gpuLoadSubCkts(std::vector<SubCkt>::iterator start, std::vector<SubCkt>::iterator end) {
+	int dist = std::distance(start,end);
+	int **h_sckt_path = (int**)malloc(sizeof(int*)*dist);
+	int **sckt_path;
+	checkCudaError(__FILE__,__LINE__);
+	for (int i = 0; (start+i) < end; i++) {
+		h_sckt_path[i] = (start+i)->gpu();
+	}
+	cudaMalloc(&sckt_path, sizeof(int*)*dist);
+	checkCudaError(__FILE__,__LINE__);
+	cudaMemcpy(sckt_path, h_sckt_path, sizeof(int*)*dist,cudaMemcpyHostToDevice);
+
+	free(h_sckt_path);
+	return sckt_path;
 }
