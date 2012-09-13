@@ -61,5 +61,12 @@ class SubCkt {
 		SubCkt& operator=(const SubCkt&);
 		void grow(unsigned int node);
 };
+struct GPU_SCKT_BATCH {
+	int** sckts;
+	size_t* sizes;
+	GPU_SCKT_BATCH(int** sckt, size_t* size) { this->sckts = sckt; this->sizes = size; }
+};
+#ifndef CPU
 
+#endif  // CPU 
 #endif // SUBCKT_H
