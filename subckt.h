@@ -38,7 +38,6 @@ class SubCkt {
 		void add(const Circuit&, const int&);
 		void copy();
 		void clear();
-		int* gpu() { return this->_gpu;}
 		int in(unsigned int) const;
 		inline int levels() const { return _levels->size() - 1; }
 		inline int levelsize(const unsigned int n) const { return ( n < _levels->size() ? _levels->at(n) : 0); }
