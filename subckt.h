@@ -29,13 +29,13 @@ class SubCkt {
 		void grow_recurse_forward(unsigned int node);
 	public:	
 		~SubCkt();
-		std::string save() const;
+		std::string save();
 		void load(const std::string& memfile);
 		SubCkt(const Circuit& ckt);
 		SubCkt(const SubCkt&);
 		SubCkt(const Circuit& ckt, unsigned int node);
 		void add(const int& n) { add(this->_ckt, n);}
-		void add(const Circuit& ckt, const int& n) { _subckt->push_back(n); }
+		void add(const Circuit&, const int&);
 		void copy();
 		void clear();
 		int* gpu() { return this->_gpu;}
@@ -53,7 +53,9 @@ class SubCkt {
 		// Read-only copy of a NODEC.
 		inline NODEC& at(const unsigned int n) const { return _ckt.at(ref(n)); }
 		inline const Circuit& ckt() const { return _ckt; }
-
+		bool operator<(const SubCkt&) const;
+		bool operator<(const int) const;
+		inline int* gpu() { return this->_gpu;}
 		int size() const { return this->_subckt->size();}
 		std::vector<int>& subckt() const { return *_subckt; }
 		const SubCkt operator/(const SubCkt& b) const; // intersection

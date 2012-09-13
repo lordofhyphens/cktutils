@@ -4,7 +4,7 @@ SubCkt::SubCkt(const Circuit& ckt) : _ckt(ckt) {
 	_flat = NULL;
 	_levels = new std::vector<int>();
 	_subckt = new std::vector<int>();
-	for (int  i = 0; i <= _ckt.levels(); i++) {
+	for (uint32_t  i = 0; i <= _ckt.levels(); i++) {
 		_levels->push_back(0); // add more nodes to the levels vector if necessary
 	}
 }
@@ -12,13 +12,18 @@ SubCkt::SubCkt(const Circuit& ckt, unsigned int node) : _ckt(ckt) {
 	_flat = NULL;
 	_levels = new std::vector<int>();
 	_subckt = new std::vector<int>();
-	for (int  i = 0; i <= _ckt.levels(); i++) {
+	for (uint32_t  i = 0; i <= _ckt.levels(); i++) {
 		_levels->push_back(0); // add more nodes to the levels vector if necessary
 	}
 	grow(node);
 }
-
-std::string SubCkt::save() const {
+bool SubCkt::operator<(const SubCkt& other) const {
+	return (*this < other.size());
+}
+bool SubCkt::operator<(int other) const {
+	return size() < other;
+}
+std::string SubCkt::save() {
 	// dump the subckt to a space-separated file, followed by a newline.
 	std::stringstream ofile;
 	if (_subckt->size() > 0) {
@@ -48,13 +53,17 @@ SubCkt::~SubCkt() {
 	delete _levels;
 	delete _subckt;
 }
+void SubCkt::add(const Circuit& ckt, const int& n) {
+//	_levels->at(ckt.at(n).level) += 1;
+	_subckt->push_back(n);
+}
 void SubCkt::levelize() {
 	delete _levels;
 	_levels = new std::vector<int>();
-	for (int  i = 0; i <= _ckt.levels(); i++) {
+	for (uint32_t  i = 0; i <= _ckt.levels(); i++) {
 		_levels->push_back(0); // add more nodes to the levels vector if necessary
 	}
-	for (unsigned int i = 0; i < _subckt->size(); i++) {
+	for (uint32_t i = 0; i < _subckt->size(); i++) {
 		_levels->at(_ckt.at(_subckt->at(i)).level) += 1;
 	}
 }
@@ -89,6 +98,19 @@ void SubCkt::grow_recurse_forward(unsigned int node) {
 	}
 }
 
+int SubCkt::at(unsigned int n) {
+	return this->_subckt->at(n);
+}
+int SubCkt::levels() {
+	return _levels->size() - 1;
+}
+int SubCkt::levelsize(unsigned int n) {
+	if (n < this->_levels->size()) {
+		return this->_levels->at(n);
+	} else {
+		return 0;
+	}
+}
 
 int* SubCkt::flat() {
 	int* z = new int[_subckt->size()+1];
@@ -107,9 +129,13 @@ const SubCkt SubCkt::operator/(const SubCkt& b) const {
 	}
 	return sc;
 }
-int SubCkt::in(unsigned int tgt) const {
+int SubCkt::in(unsigned int tgt) {
 	std::vector<int>::iterator is = find(_subckt->begin(), _subckt->end(), tgt);
-	return (is == _subckt->end() ? -1 : std::distance(_subckt->begin(),is));
+	if (is == _subckt->end()) {
+		return -1;
+	} else {
+		return std::distance(_subckt->begin(), is);
+	}
 }
 SubCkt::SubCkt(const SubCkt& other) : _ckt(other._ckt){
 	_levels = new std::vector<int>();

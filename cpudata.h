@@ -16,7 +16,7 @@ class CPU_Data {
     protected:
 		std::vector<ARRAY2D<uint8_t> >* _data; // variable size CPU memory space.
 		size_t _width, _height;
-		int _current; // current chunk on GPU.
+		size_t _current; // current chunk on GPU.
     public:
 		size_t height() const { return this->_height;}
 		size_t width() const { return this->_width;}
