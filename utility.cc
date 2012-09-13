@@ -10,6 +10,22 @@ timespec diff(timespec start, timespec end) {
 	}
 	return temp;
 }
+void loadSubCkts(const Circuit& ckt, std::vector<SubCkt>& subckt, const std::string filename) {
+	SubCkt* tmp;
+	std::fstream file(filename.c_str());
+	std::string buffer;
+	while (!file.eof()) { 
+		std::getline(file,buffer);
+		if (buffer.length() < 1) {
+			continue;
+		}
+		tmp = new SubCkt(ckt);
+		tmp->load(buffer);
+		subckt.push_back(*tmp);
+		delete tmp;
+	}
+
+}
 
 float floattime(timespec time) {
 	float temp =0.0; 
