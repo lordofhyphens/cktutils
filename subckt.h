@@ -29,7 +29,7 @@ class SubCkt {
 		void grow_recurse_forward(unsigned int node);
 	public:	
 		~SubCkt();
-		std::string save();
+		std::string save() const;
 		void load(const std::string& memfile);
 		SubCkt(const Circuit& ckt);
 		SubCkt(const SubCkt&);

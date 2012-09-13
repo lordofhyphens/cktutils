@@ -1,5 +1,5 @@
 #include "subckt.h"
-
+#ifndef CPU
 __device__ inline int find(int* ckt, int tgt) {
 	int i = 0;
 	while (ckt[i] != -1 && ckt[i] != tgt)
@@ -9,7 +9,7 @@ __device__ inline int find(int* ckt, int tgt) {
 
 #define KEY_NOT_FOUND -1
 __device__ inline int midpoint(int min, int max) {
-	return (min + ((max-min)/2);
+	return (min + ((max-min)/2));
 }
 // Performs a reverse-lookup using binary search.
 // src is the position in the *subcircuit* the current gate lies.
@@ -38,14 +38,6 @@ void SubCkt::copy() {
 	delete test;
 }
 
-SubCkt & SubCkt::operator=(const SubCkt & rhs) {
-	if (this == &rhs)
-		return *this;
-	this->load(rhs.save());
-	this->_ref_node = rhs._ref_node;
-
-	return *this;
-}
 void SubCkt::clear() {
 	if (_gpu != NULL) 
 		cudaFree(_gpu);
@@ -57,3 +49,5 @@ SubCkt::~SubCkt() {
 	delete _levels;
 	delete _subckt;
 }
+
+#endif // don't compile this is CPU is defined

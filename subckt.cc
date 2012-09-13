@@ -23,7 +23,7 @@ bool SubCkt::operator<(const SubCkt& other) const {
 bool SubCkt::operator<(int other) const {
 	return size() < other;
 }
-std::string SubCkt::save() {
+std::string SubCkt::save() const {
 	// dump the subckt to a space-separated file, followed by a newline.
 	std::stringstream ofile;
 	if (_subckt->size() > 0) {
@@ -49,10 +49,12 @@ void SubCkt::load(const std::string& memfile) {
 	levelize();
 	_ref_node = _subckt->at(0);
 }
+#ifdef CPU
 SubCkt::~SubCkt() {
 	delete _levels;
 	delete _subckt;
 }
+#endif
 void SubCkt::add(const Circuit& ckt, const int& n) {
 //	_levels->at(ckt.at(n).level) += 1;
 	_subckt->push_back(n);
@@ -98,20 +100,6 @@ void SubCkt::grow_recurse_forward(unsigned int node) {
 	}
 }
 
-int SubCkt::at(unsigned int n) {
-	return this->_subckt->at(n);
-}
-int SubCkt::levels() {
-	return _levels->size() - 1;
-}
-int SubCkt::levelsize(unsigned int n) {
-	if (n < this->_levels->size()) {
-		return this->_levels->at(n);
-	} else {
-		return 0;
-	}
-}
-
 int* SubCkt::flat() {
 	int* z = new int[_subckt->size()+1];
 	for (unsigned int i = 0; i < _subckt->size(); i++)
@@ -129,7 +117,7 @@ const SubCkt SubCkt::operator/(const SubCkt& b) const {
 	}
 	return sc;
 }
-int SubCkt::in(unsigned int tgt) {
+int SubCkt::in(unsigned int tgt) const {
 	std::vector<int>::iterator is = find(_subckt->begin(), _subckt->end(), tgt);
 	if (is == _subckt->end()) {
 		return -1;
@@ -144,9 +132,11 @@ SubCkt::SubCkt(const SubCkt& other) : _ckt(other._ckt){
 	this->_subckt->assign(other._subckt->begin(), other._subckt->end());
 	this->_levels->assign(other._levels->begin(), other._levels->end());
 }
-SubCkt& SubCkt::operator=(const SubCkt& other) { 
-	this->_ref_node = other._ref_node;
-	this->_levels = other._levels;
-	this->_subckt = other._subckt;
+SubCkt & SubCkt::operator=(const SubCkt & rhs) {
+	if (this == &rhs)
+		return *this;
+	this->load(rhs.save());
+	this->_ref_node = rhs._ref_node;
+
 	return *this;
 }
