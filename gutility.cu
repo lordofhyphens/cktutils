@@ -58,7 +58,7 @@ GPU_SCKT_BATCH gpuLoadSubCkts(std::vector<SubCkt>::iterator start, std::vector<S
 	checkCudaError(__FILE__,__LINE__);
 	for (int i = 0; (start+i) < end; i++) {
 		h_sckt_path[i] = (start+i)->gpu();
-		h_sckt_sizes = (start+i)->size();
+		h_sckt_sizes[i] = (start+i)->size();
 	}
 	cudaMalloc(&sckt_path, sizeof(int*)*dist);
 	cudaMalloc(&sckt_sizes, sizeof(size_t)*dist);
