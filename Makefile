@@ -6,7 +6,7 @@ NVCFLAGS=-arch=sm_20 -I/opt/net/apps/cuda/include -ccbin g++-4.4
 .SUFFIXES: .o .cu .cc
 .cc.o: $(objs:.o=.cc) $(objs:.o=.h)
 	$(CXX) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
-.cu.o: $(gobjs:.o=.cu)
+.cu.o: 
 	$(NVCC) -c $(NVCFLAGS) -o $@ $<
 
 all: $(objs) 

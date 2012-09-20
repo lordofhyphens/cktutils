@@ -1,7 +1,12 @@
 #include <cuda.h>
 #include "gpudata.h"
 #include "defines.h"
-
+void HandleGPUDataError( cudaError_t err, const char *file, uint32_t line ) {
+    if (err != cudaSuccess) {
+		throw std::runtime_error(std::string(cudaGetErrorString( err )));
+    }
+}
+#define HANDLE_ERROR( err ) (HandleGPUDataError( err, __FILE__, __LINE__ ))
 GPU_Data::GPU_Data() {
 	this->_gpu = new ARRAY2D<uint8_t>();
 	this->_block_size = 0;
@@ -43,10 +48,14 @@ ARRAY2D<uint8_t> GPU_Data::gpu(uint32_t ref) {
 
 // total size in columns, rows. 
 uint32_t GPU_Data::initialize(size_t in_columns, size_t in_rows, uint32_t block_width) {
+	cudaError_t err = cudaSuccess;
 	uint32_t chunks = (in_columns / block_width) + ((in_columns % block_width) > 0);
 
 	this->_gpu = new ARRAY2D<uint8_t>(NULL, in_rows, block_width, sizeof(uint8_t)*block_width);
-	cudaMallocPitch(&(this->_gpu->data), &(this->_gpu->pitch), sizeof(uint8_t)*this->_gpu->width, in_rows);
+	err = cudaMallocPitch(&(this->_gpu->data), &(this->_gpu->pitch), sizeof(uint8_t)*this->_gpu->width, in_rows);
+	if (err != cudaSuccess) { 
+		DPRINT("Failed to allocate memory.");
+	}
 	uint32_t rem_columns = in_columns;
 	for (uint32_t i = 0; i < chunks;i++) {
 		uint8_t* data = new uint8_t[in_rows*sizeof(uint8_t)*min(block_width,rem_columns)];

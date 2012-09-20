@@ -14,6 +14,7 @@ struct ARRAY2D {
 	ARRAY2D(size_t, size_t, size_t);
 	ARRAY2D(const ARRAY2D<t>&);
 	ARRAY2D(size_t height, size_t width);
+	ARRAY2D<t>& operator=(const ARRAY2D<t>&);
 	void initialize(t*, size_t, size_t, size_t);
 	size_t size();
 	size_t bwidth();
@@ -36,7 +37,7 @@ ARRAY2D<t>::ARRAY2D(size_t height, size_t width) {
 	assert(in != NULL);
 	this->initialize(in, height, width, sizeof(t)*width);
 }
-
+// Shallow copy constructor
 template <class t>
 ARRAY2D<t>::ARRAY2D(const ARRAY2D<t>& other) {
 	this->data = other.data;
@@ -44,6 +45,16 @@ ARRAY2D<t>::ARRAY2D(const ARRAY2D<t>& other) {
 	this->pitch = other.pitch;
 	this->width = other.width;
 	this->mem_footprint = other.mem_footprint;
+}
+// Shallow copy
+template <class t>
+ARRAY2D<t>& ARRAY2D<t>::operator=(const ARRAY2D<t>& other) {
+	this->data = other.data;
+	this->height = other.height;
+	this->pitch = other.pitch;
+	this->width = other.width;
+	this->mem_footprint = other.mem_footprint;
+	return *this;
 }
 template <class t> 
 void ARRAY2D<t>::initialize(t *in, size_t height, size_t width, size_t pitch) {

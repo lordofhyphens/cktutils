@@ -100,13 +100,6 @@ void SubCkt::grow_recurse_forward(unsigned int node) {
 	}
 }
 
-int* SubCkt::flat() {
-	int* z = new int[_subckt->size()+1];
-	for (unsigned int i = 0; i < _subckt->size(); i++)
-		z[i] = _subckt->at(i);
-	z[_subckt->size()] = -1;
-	return z;
-}
 
 const SubCkt SubCkt::operator/(const SubCkt& b) const {
 	SubCkt sc(this->_ckt);

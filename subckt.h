@@ -20,7 +20,6 @@ class SubCkt {
 		int _ref_node;
 		int *_flat;
 		int *_gpu;
-		int* flat(); // get the flat array representation, allocates memory.
 		std::vector<int>* _levels;
 		std::vector<int>* _subckt;
 		void levelize();
@@ -36,7 +35,7 @@ class SubCkt {
 		SubCkt(const Circuit& ckt, unsigned int node);
 		void add(const int& n) { add(this->_ckt, n);}
 		void add(const Circuit&, const int&);
-		void copy();
+		void copy(); // Flattens and copies the subckt to GPU memory.
 		void clear();
 		int in(unsigned int) const;
 		inline int levels() const { return _levels->size() - 1; }

@@ -49,24 +49,3 @@ std::string gpuMemCheck(){
 	return temp.str();
 }
 
-GPU_SCKT_BATCH gpuLoadSubCkts(std::vector<SubCkt>::iterator start, std::vector<SubCkt>::iterator end) {
-	int dist = std::distance(start,end);
-	int **h_sckt_path = (int**)malloc(sizeof(int*)*dist);
-	size_t *h_sckt_sizes = (size_t*)malloc(sizeof(size_t)*dist);
-	int **sckt_path;
-	size_t *sckt_sizes;
-	checkCudaError(__FILE__,__LINE__);
-	for (int i = 0; (start+i) < end; i++) {
-		h_sckt_path[i] = (start+i)->gpu();
-		h_sckt_sizes[i] = (start+i)->size();
-	}
-	cudaMalloc(&sckt_path, sizeof(int*)*dist);
-	cudaMalloc(&sckt_sizes, sizeof(size_t)*dist);
-	checkCudaError(__FILE__,__LINE__);
-	cudaMemcpy(sckt_path, h_sckt_path, sizeof(int*)*dist,cudaMemcpyHostToDevice);
-	cudaMemcpy(sckt_sizes, h_sckt_sizes, sizeof(size_t)*dist,cudaMemcpyHostToDevice);
-
-	free(h_sckt_path);
-	free(h_sckt_sizes);
-	return GPU_SCKT_BATCH(sckt_path, sckt_sizes);
-}
