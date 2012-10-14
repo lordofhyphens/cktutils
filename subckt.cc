@@ -2,6 +2,7 @@
 
 SubCkt::SubCkt(const Circuit& ckt) : _ckt(ckt) {
 	_flat = NULL;
+	_gpu = NULL;
 	_levels = new std::vector<int>();
 	_subckt = new std::vector<int>();
 	for (uint32_t  i = 0; i <= _ckt.levels(); i++) {
@@ -10,6 +11,7 @@ SubCkt::SubCkt(const Circuit& ckt) : _ckt(ckt) {
 }
 SubCkt::SubCkt(const Circuit& ckt, unsigned int node) : _ckt(ckt) {
 	_flat = NULL;
+	_gpu = NULL;
 	_levels = new std::vector<int>();
 	_subckt = new std::vector<int>();
 	for (uint32_t  i = 0; i <= _ckt.levels(); i++) {
@@ -56,7 +58,6 @@ SubCkt::~SubCkt() {
 }
 #endif
 void SubCkt::add(const Circuit& ckt, const int& n) {
-//	_levels->at(ckt.at(n).level) += 1;
 	_subckt->push_back(n);
 }
 void SubCkt::levelize() {
@@ -121,6 +122,7 @@ int SubCkt::in(unsigned int tgt) const {
 SubCkt::SubCkt(const SubCkt& other) : _ckt(other._ckt){
 	_levels = new std::vector<int>();
 	_subckt = new std::vector<int>();
+	_gpu = NULL;
 	this->_ref_node = other._ref_node;
 	this->_subckt->assign(other._subckt->begin(), other._subckt->end());
 	this->_levels->assign(other._levels->begin(), other._levels->end());

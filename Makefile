@@ -1,6 +1,6 @@
 objs=ckt.o cpudata.o iscas.o node.o sort.o subckt.o utility.o vectors.o mergestate.o
 gobjs=gutility.o gpuckt.o gpudata.o g_subckt.o
-NVCC=nvcc
+NVCC=/opt/net/apps/cuda/bin/nvcc
 NVCFLAGS=-arch=sm_20 -I/opt/net/apps/cuda/include -ccbin g++-4.4
 .SUFFIXES:
 .SUFFIXES: .o .cu .cc

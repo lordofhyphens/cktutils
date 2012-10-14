@@ -31,14 +31,21 @@ void selectGPU() {
 		DPRINT("Selected %s as GPU.\n", properties.name);
 	}
 }
+size_t gpuCheckMemory() {
+	size_t freeMem = 0;
+	size_t totalMem = 0;
+	cudaMemGetInfo(&freeMem, &totalMem);  
+	DPRINT("Memory avaliable: Free: %lu, Total: %lu\n",freeMem, totalMem); 
+	return freeMem;
 
+}
 int gpuCalculateSimulPatterns(int lines, int patterns) {
 	// get free memory
 	size_t free_mem, total_mem;
 	int allowed_patterns;
 	cudaMemGetInfo(&free_mem, &total_mem);
 	// added a buffer 	
-	allowed_patterns = (free_mem + (lines*sizeof(int))) / (lines*(sizeof(uint32_t)*2.5) + sizeof(uint8_t)*1.5);
+	allowed_patterns = (free_mem + (lines*sizeof(uint32_t))) / (lines*(sizeof(uint32_t)*4) + sizeof(uint8_t)*1.5);
 	return min(patterns, allowed_patterns -(allowed_patterns % 32));
 }
 std::string gpuMemCheck(){

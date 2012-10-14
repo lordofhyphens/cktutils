@@ -15,6 +15,7 @@ struct ARRAY2D {
 	ARRAY2D(const ARRAY2D<t>&);
 	ARRAY2D(size_t height, size_t width);
 	ARRAY2D<t>& operator=(const ARRAY2D<t>&);
+	~ARRAY2D();
 	void initialize(t*, size_t, size_t, size_t);
 	size_t size();
 	size_t bwidth();
@@ -79,5 +80,8 @@ size_t ARRAY2D<t>::size() {
 template <class t>
 size_t ARRAY2D<t>::bwidth() {
 	return (sizeof(t) * width);
+}
+template <class t> 
+ARRAY2D<t>::~ARRAY2D() {
 }
 #endif

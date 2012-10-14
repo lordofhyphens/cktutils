@@ -15,7 +15,10 @@ CPU_Data::CPU_Data(size_t rows, size_t columns) {
 }
 
 CPU_Data::~CPU_Data() {
-//	std::for_each(this->_data->begin(), this->_data->end(), delete_data);
+	for (std::vector<ARRAY2D<uint8_t> >::iterator i = _data->begin(); i < _data->end(); i++) {
+		delete i->data;
+	}
+	delete this->_data;
 }
 
 

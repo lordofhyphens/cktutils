@@ -18,7 +18,7 @@
 	void gpuCleanup(void*);
 	void loadSubCkts(const Circuit& ckt,std::vector<SubCkt>& subckt, std::string filename);
 	inline bool deleteAll(int * theElement ) { if (theElement != NULL) delete [] theElement; return true; }
-
+	size_t gpuCheckMemory();
 #ifdef __CUDACC__
 #include <stdio.h>
 __device__ inline int find(int* ckt, int tgt) {
@@ -45,8 +45,8 @@ __device__ inline int bin_find(const int ckt[],const int src,const int tgt,const
 	imax = (limit >= src)*(limit) + (src >= limit)*(src);
 	while (imin < imax) {
 		int imid = midpoint(imin, imax);
-		imin = (ckt[imid] < tgt)*(imid + 1) + (ckt[imid] >= tgt)*(imid);
-		imax = (ckt[imid] < tgt)*(imax) + (ckt[imid] >= tgt)*(imid);
+		imax = (tgt < ckt[imid])*(imid-1) + (tgt > ckt[imid])*(imax) + (tgt == ckt[imid])*imid;
+		imin = (tgt < ckt[imid])*(imin) + (tgt > ckt[imid])*(imid+1) + (tgt == ckt[imid])*imid;
 	}
 	// check for equality
 	//printf("%s:%d finish: imin == imax:%d, ckt[imin] == key: %d, return %d\n",__FILE__,__LINE__,imin == imax, ckt[imin] == tgt, KEY_NOT_FOUND*(ckt[imin] != tgt) + (ckt[imin] == tgt)*imin);

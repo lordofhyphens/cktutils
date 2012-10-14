@@ -1,4 +1,6 @@
 #include "subckt.h"
+#include "utility.h"
+#include <cassert>
 #ifndef CPU
 
 void SubCkt::copy() {
@@ -20,9 +22,11 @@ void SubCkt::copy() {
 }
 
 void SubCkt::clear() {
-	if (_gpu != NULL) 
+	if (_gpu != NULL) {
 		cudaFree(_gpu);
-	_gpu = NULL;
+		_gpu = NULL;
+		assert (_gpu==NULL);
+	}
 }
 SubCkt::~SubCkt() {
 	if (_gpu != NULL) 
