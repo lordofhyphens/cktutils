@@ -74,12 +74,79 @@ void Circuit::load(const char* memfile) {
 		this->_levels = std::max(this->_levels, a->level);
 	}
 }
-void Circuit::read_bench(const char* benchfile) {
+void Circuit::load(const char* memfile, const char * ext_id) {
+	std::ifstream ifile(memfile);
+	int type;
+	std::string strbuf;
+	std::string name;
+	while (!ifile.eof()) {
+		NODEC node; 
+		std::getline (ifile,strbuf);
+		if (strbuf.size() < 5) {
+			continue;
+		}
+		std::stringstream buf(strbuf);
+		buf.ignore(300, ' ');
+		buf >> node.name >> type >> node.po >> node.level >> node.nfi;
+		std::string tmp_node = node.name;
+		tmp_node.append("-CKT-");
+		tmp_node.append(ext_id);
+		node.name = tmp_node.c_str();
+		node.typ = type;
+		for (int i = 0; i < node.nfi; i++) {
+			std::string temp;
+			int id;
+			size_t p;
+			buf >> temp;
+			p = temp.find(",");
+			std::string tmp = temp.substr(0,p);
+			tmp.append("-CKT-");
+			tmp.append(ext_id);
+			node.finlist.append(tmp);
+			if (i < node.nfi-1)
+				node.finlist.append(",");
+			std::string tmp2 = temp.substr(p+1);
+			tmp2.append("-CKT-");
+			tmp2.append(ext_id);
+			std::stringstream fnum(tmp2);
+			from_string<int>(id, tmp2, std::dec);
+			node.fin.push_back(std::make_pair(tmp,0));
+		}
+		buf >> node.nfo;
+		for (int i = 0; i < node.nfo; i++) {
+			std::string temp;
+			int id;
+			size_t p;
+			buf >> temp;
+			std::string tmp = temp.substr(0,p);
+			tmp.append("-CKT-");
+			tmp.append(ext_id);
+			p = temp.find(",");
+			std::string tmp2 = temp.substr(p+1);
+			tmp2.append("-CKT-");
+			tmp2.append(ext_id);
+			std::stringstream fnum(tmp2);
+			from_string<int>(id, tmp2, std::dec);
+			node.fot.push_back(std::make_pair(tmp,0));
+		}
+		this->graph->push_back(node);
+	}
+	std::clog << "Annotating circuit." << std::endl;
+	annotate();
+	std::clog << "Sorting circuit." << std::endl;
+	std::sort(graph->begin(), graph->end());
+	
+	this->_levels = 1;
+	for (std::vector<NODEC>::iterator a = this->graph->begin(); a < this->graph->end(); a++) {
+		this->_levels = std::max(this->_levels, a->level);
+	}
+}
+void Circuit::read_bench(const char* benchfile, const char* ext) {
 	std::ifstream tfile(benchfile);
 	this->name = benchfile;
 	this->name.erase(std::remove_if(this->name.begin(), this->name.end(),isspace),this->name.end());
 	this->name.erase(std::find(this->name.begin(),this->name.end(),'.'),this->name.end());
-	std::vector<NODEC>* g = this->graph;
+	std::vector<NODEC>* g = new std::vector<NODEC>();
 	std::string buffer, id;
 	std::stringstream node;
 	int front, back;
@@ -91,16 +158,19 @@ void Circuit::read_bench(const char* benchfile) {
 			front = buffer.find("(");
 			back = buffer.find(")");
 			id = buffer.substr(front+1, back - (front+1));
+			id.append(ext);
 			g->push_back(NODEC(id, INPT));
 		} else if (buffer.find("OUTPUT") != std::string::npos) {
 			front = buffer.find("(");
 			back = buffer.find(")");
 			id = buffer.substr(front+1, back - (front+1));
+			id.append(ext);
 			g->push_back(NODEC(id));
 			g->back().po = true;
 		} else if (buffer.find("=") != std::string::npos) {
 			id = buffer.substr(0,buffer.find("="));
 			id.erase(std::remove_if(id.begin(), id.end(),isspace),id.end());
+			id.append(ext);
 			front = buffer.find("(");
 			back = buffer.find(")");
 			std::string finlist = buffer.substr(front+1, back - (front+1));
@@ -128,6 +198,7 @@ void Circuit::read_bench(const char* benchfile) {
 		node.clear();
 		while (getline(node,buffer,',')) {
 			// figure out which which node has this as a fanout.
+			buffer.append(ext);
 			nodeiter j = find(g->begin(), g->end(), buffer);
 			j->nfo++;
 		}
@@ -138,6 +209,7 @@ void Circuit::read_bench(const char* benchfile) {
 		node.clear();
 		std::string newfin = "";
 		while (getline(node,buffer,',')) {
+			buffer.append(ext);
 			nodeiter j = find(g->begin(), g->end(), buffer);
 			if (j->nfo < 2) {
 				iter->fin.push_back(std::make_pair(j->name, -1));
@@ -171,6 +243,11 @@ void Circuit::read_bench(const char* benchfile) {
 	}
 	std::clog << "Removing empty nodes." <<std::endl;
 	remove_if(g->begin(),g->end(),isUnknown);
+
+
+	this->graph->insert(this->graph->end(), g->begin(), g->end());
+	delete g;
+	g = this->graph;
 
 	std::clog << "Sorting circuit." << std::endl;
 	std::sort(g->begin(), g->end(),nameSort);

@@ -1,4 +1,5 @@
 #include "subckt.h"
+#include <algorithm>
 
 SubCkt::SubCkt(const Circuit& ckt) : _ckt(ckt) {
 	_flat = NULL;
@@ -27,7 +28,7 @@ std::string SubCkt::save() const {
 	// dump the subckt to a space-separated file, followed by a newline.
 	std::stringstream ofile;
 	if (_subckt->size() > 0) {
-		ofile << _ref_node << ":";
+		ofile << _subckt->size() << ":";
 		for (unsigned int i = 0; i < this->_subckt->size(); i++) {
 			ofile << _subckt->at(i) << " ";
 		}
@@ -56,7 +57,6 @@ SubCkt::~SubCkt() {
 }
 #endif
 void SubCkt::add(const Circuit& ckt, const int& n) {
-//	_levels->at(ckt.at(n).level) += 1;
 	_subckt->push_back(n);
 }
 void SubCkt::levelize() {
@@ -86,15 +86,18 @@ void SubCkt::grow(unsigned int node) {
 
 void SubCkt::grow_recurse_back(unsigned int node) {
 	const NODEC& home_node = _ckt.at(node);
-	add(node);
+	if (std::find(_subckt->begin(),_subckt->end(), node) != _subckt->end())
+		return;
+	_subckt->push_back(node);
 	for (unsigned int i = 0; i < home_node.fin.size(); i++) {
 		grow_recurse_back(home_node.fin.at(i).second);
 	}
 }
-
 void SubCkt::grow_recurse_forward(unsigned int node) {
 	const NODEC& home_node = _ckt.at(node);
-	add(node);
+	if (std::find(_subckt->begin(),_subckt->end(), node) != _subckt->end())
+		return;
+	_subckt->push_back(node);
 	for (unsigned int i = 0; i < home_node.fot.size(); i++) {
 		grow_recurse_forward(home_node.fot.at(i).second);
 	}

@@ -71,7 +71,7 @@ class Circuit {
 		}
 		~Circuit();
 		bool nodelevel(unsigned int n, unsigned int m) const;
-		void read_bench(const char* benchfile);
+		void read_bench(const char* benchfile, const char* ext = "");
 		void print() const;
 		NODEC& at(int node) const { return this->graph->at(node);}
 		inline size_t levels() const { return this->_levels;}
@@ -79,6 +79,7 @@ class Circuit {
 		size_t size() const { return this->graph->size();}
 		void save(const char*); // save a copy of the circuit in its current levelized form
 		void load(const char* memfile); // load a circuit that has been levelized.
+		void load(const char* memfile, const char* ext_id);
 };
 
 std::ostream& operator<<(std::ostream& outstream, const NODEC& node);
