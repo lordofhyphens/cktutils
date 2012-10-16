@@ -3,7 +3,7 @@ typedef std::vector<NODEC>::iterator nodeiter;
 Circuit::Circuit() {
 	this->graph = new std::vector<NODEC>();
 	this->_levels = 1;
-}
+} 
 Circuit::~Circuit() {
 	delete this->graph;
 }
@@ -79,6 +79,9 @@ void Circuit::load(const char* memfile, const char * ext_id) {
 	int type;
 	std::string strbuf;
 	std::string name;
+	std::vector<NODEC> *g = new std::vector<NODEC>();
+	const std::string cktid(ext_id);
+	size_t offset = this->graph->size();
 	while (!ifile.eof()) {
 		NODEC node; 
 		std::getline (ifile,strbuf);
@@ -88,10 +91,9 @@ void Circuit::load(const char* memfile, const char * ext_id) {
 		std::stringstream buf(strbuf);
 		buf.ignore(300, ' ');
 		buf >> node.name >> type >> node.po >> node.level >> node.nfi;
-		std::string tmp_node = node.name;
-		tmp_node.append("-CKT-");
-		tmp_node.append(ext_id);
-		node.name = tmp_node.c_str();
+		std::string tmp_node = node.name + cktid;
+		std::cerr << "Node Name " << tmp_node << std::endl;
+		node.name = tmp_node;
 		node.typ = type;
 		for (int i = 0; i < node.nfi; i++) {
 			std::string temp;
@@ -99,17 +101,11 @@ void Circuit::load(const char* memfile, const char * ext_id) {
 			size_t p;
 			buf >> temp;
 			p = temp.find(",");
-			std::string tmp = temp.substr(0,p);
-			tmp.append("-CKT-");
-			tmp.append(ext_id);
+			std::string tmp = temp.substr(0,p).append(cktid);
 			node.finlist.append(tmp);
 			if (i < node.nfi-1)
 				node.finlist.append(",");
-			std::string tmp2 = temp.substr(p+1);
-			tmp2.append("-CKT-");
-			tmp2.append(ext_id);
-			std::stringstream fnum(tmp2);
-			from_string<int>(id, tmp2, std::dec);
+			from_string<int>(id, temp.substr(p+1), std::dec);
 			node.fin.push_back(std::make_pair(tmp,0));
 		}
 		buf >> node.nfo;
@@ -118,23 +114,19 @@ void Circuit::load(const char* memfile, const char * ext_id) {
 			int id;
 			size_t p;
 			buf >> temp;
-			std::string tmp = temp.substr(0,p);
-			tmp.append("-CKT-");
-			tmp.append(ext_id);
 			p = temp.find(",");
-			std::string tmp2 = temp.substr(p+1);
-			tmp2.append("-CKT-");
-			tmp2.append(ext_id);
-			std::stringstream fnum(tmp2);
-			from_string<int>(id, tmp2, std::dec);
-			node.fot.push_back(std::make_pair(tmp,0));
+			std::string tmp(temp.substr(0,p));
+			std::string tmp2 = tmp+cktid;
+			std::cerr << tmp << " " << tmp2 << std::endl;
+			node.fot.push_back(std::make_pair(tmp2,0));
 		}
-		this->graph->push_back(node);
+		g->push_back(node);
 	}
-	std::clog << "Annotating circuit." << std::endl;
-	annotate();
-	std::clog << "Sorting circuit." << std::endl;
-	std::sort(graph->begin(), graph->end());
+	this->graph->insert(graph->end(),g->begin(),g->end());
+	delete g;
+	g = this->graph;
+	std::sort(g->begin(), g->end());
+	annotate(g);
 	
 	this->_levels = 1;
 	for (std::vector<NODEC>::iterator a = this->graph->begin(); a < this->graph->end(); a++) {
@@ -256,14 +248,14 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 	g->resize(it - g->begin());
 	
 	std::clog << "Annotating circuit." << std::endl;
-	annotate();
+	annotate(g);
 
 	std::clog << "Levelizing circuit." << std::endl;
 	this->levelize();
 	std::clog << "Sorting circuit." << std::endl;
 	std::sort(g->begin(), g->end());
 	std::clog << "Annotating circuit." << std::endl;
-	annotate();
+	annotate(g);
 }
 bool isPlaced(const NODEC& node) {
 	return (node.placed == 0);
@@ -316,8 +308,7 @@ int Circuit::levelsize(int l) const {
 	return countInLevel(*graph, l);
 }
 // labels each fanin of each circuit 
-void Circuit::annotate() {
-	std::vector<NODEC>* g = this->graph;
+void Circuit::annotate(std::vector<NODEC>* g) {
 	for (std::vector<NODEC>::iterator iter = g->begin(); iter < g->end(); iter++) {
 		for (std::vector<std::pair<std::string, int> >::iterator i = iter->fin.begin(); i < iter->fin.end(); i++) {
 			i->second = count_if(g->begin(), find(g->begin(),g->end(),i->first), Yes);

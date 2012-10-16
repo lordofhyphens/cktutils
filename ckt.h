@@ -60,7 +60,7 @@ class Circuit {
 		void levelize();
 		void mark_lines();
 		int _levels;
-		void annotate();
+		void annotate(std::vector<NODEC>*);
 	public:
 		Circuit();
 		Circuit(int type, const char* benchfile) {
