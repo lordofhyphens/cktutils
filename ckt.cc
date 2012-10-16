@@ -92,7 +92,6 @@ void Circuit::load(const char* memfile, const char * ext_id) {
 		buf.ignore(300, ' ');
 		buf >> node.name >> type >> node.po >> node.level >> node.nfi;
 		std::string tmp_node = node.name + cktid;
-		std::cerr << "Node Name " << tmp_node << std::endl;
 		node.name = tmp_node;
 		node.typ = type;
 		for (int i = 0; i < node.nfi; i++) {
@@ -117,7 +116,6 @@ void Circuit::load(const char* memfile, const char * ext_id) {
 			p = temp.find(",");
 			std::string tmp(temp.substr(0,p));
 			std::string tmp2 = tmp+cktid;
-			std::cerr << tmp << " " << tmp2 << std::endl;
 			node.fot.push_back(std::make_pair(tmp2,0));
 		}
 		g->push_back(node);
@@ -126,6 +124,7 @@ void Circuit::load(const char* memfile, const char * ext_id) {
 	delete g;
 	g = this->graph;
 	std::sort(g->begin(), g->end());
+	std::cerr << "Re-annotating circuit." << std::endl;
 	annotate(g);
 	
 	this->_levels = 1;
