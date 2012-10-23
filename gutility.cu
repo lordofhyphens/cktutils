@@ -28,6 +28,8 @@ void selectGPU() {
 		}
 		cudaSetDevice(max_device);
 		cudaGetDeviceProperties(&properties, max_device);
+		cudaDeviceSetCacheConfig(cudaFuncCachePreferL1);
+
 		DPRINT("Selected %s as GPU.\n", properties.name);
 	}
 }

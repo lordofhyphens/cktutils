@@ -67,6 +67,7 @@ uint32_t GPU_Data::initialize(size_t in_columns, size_t in_rows, uint32_t block_
 		}
 		
 	}
+	assert(_gpu->data != NULL);
 	this->_current = 0;
 	this->_block_size = block_width;
 	this->_width = in_columns;
