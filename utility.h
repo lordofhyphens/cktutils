@@ -9,9 +9,9 @@
 	timespec diff(timespec start, timespec end);
 	float floattime(timespec time);
     ARRAY2D<int> gpuAllocateBlockResults(size_t height);
-	void selectGPU();
+	uint8_t selectGPU();
 	void loadSubCkts(const Circuit& ckt, std::vector<SubCkt>& subckt, const std::string filename);
-	int gpuCalculateSimulPatterns(int lines, int patterns);
+	int gpuCalculateSimulPatterns(unsigned int lines, unsigned int patterns, uint8_t deviceID);
 	void checkCudaError(const char* file, int line);
 	int largest_size(std::vector<SubCkt>::iterator& start, std::vector<SubCkt>::iterator& end, int level);
 	GPU_SCKT_BATCH gpuLoadSubCkts(std::vector<SubCkt>::iterator start, std::vector<SubCkt>::iterator end);
