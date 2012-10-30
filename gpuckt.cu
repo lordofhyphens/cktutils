@@ -42,6 +42,7 @@ void GPU_Circuit::copy() {
 		ggraph[i].nfo = graph->at(i).fot.size();
 		ggraph[i].po = graph->at(i).po;
 		ggraph[i].level = graph->at(i).level;
+		ggraph[i].scratch = graph->at(i).scratch; // copy the scratchpad index
 		if (graph->at(i).typ == 0) {
 			std::cout << graph->at(i).name << " is type 0?"<<std::endl;
 			continue;
