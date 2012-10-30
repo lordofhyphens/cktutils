@@ -6,6 +6,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <list>
 #include <algorithm>
 #include <cassert>
@@ -54,6 +55,7 @@ struct NODEC {
 		void load(std::string attr);
 };
 
+bool scratch_compare(const NODEC& a, const NODEC& b);
 class Circuit {
 	protected:
 		std::vector<NODEC>* graph;

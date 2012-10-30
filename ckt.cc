@@ -276,8 +276,8 @@ bool nameSort(const NODEC& a, const NODEC& b) {
 
 size_t Circuit::max_level_pair() {
 	size_t max = 0;
-	for (size_t i = 0; i < ckt.levels() - 1; i++) {
-		size_t a = ckt.levelsize(i) + ckt.levelsize(i+1);
+	for (size_t i = 0; i < levels() - 1; i++) {
+		size_t a = levelsize(i) + levelsize(i+1);
 		if (max < a) max = a;
 	}
 	return max;
@@ -285,7 +285,7 @@ size_t Circuit::max_level_pair() {
 
 // Returns the maximum number of nodes not in i that are in j's fan-in
 size_t Circuit::out_of_level_nodes(size_t i, size_t j) {
-	unsigned int index = 0, ref = 0; count = 0;
+	unsigned int index = 0, ref = 0, count = 0;
 	while (at(index).level != j && index < size()) index++;
 	ref = index;
 	for (index; index < ref+levelsize(j); index++) {
@@ -325,7 +325,7 @@ void Circuit::compute_scratchpad() {
 		}
 		for (unsigned int fot = 0; fot < it->nfo; fot++) {
 			if (at(it->fot.at(fot).second).level != (it->level + 1) ) {
-				it->scratch = next_scratch.pop();
+				it->scratch = next_scratch.front();next_scratch.pop();
 				next_scratch.push(++i);
 				// only need in scratchpad once. 
 				fot = it->nfo;
@@ -333,4 +333,7 @@ void Circuit::compute_scratchpad() {
 			}
 		}
 	}
+}
+bool scratch_compare(const NODEC& a, const NODEC& b) {
+	return a.scratch < b.scratch;
 }
