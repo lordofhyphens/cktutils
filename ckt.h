@@ -12,6 +12,7 @@
 #include <utility>
 #include "defines.h"
 #include <stdint.h>
+#include <parallel/algorithm>
 
 #define FBENCH 1 // iscas89 BENCH format.
 // NODE TYPE CONSTANTS 
@@ -80,6 +81,7 @@ class Circuit {
 		void save(const char*); // save a copy of the circuit in its current levelized form
 		void load(const char* memfile); // load a circuit that has been levelized.
 		void load(const char* memfile, const char* ext_id);
+		void reannotate() { __gnu_parallel::sort(this->graph->begin(), this->graph->end()); DPRINT("Annotating.\n"); annotate(this->graph);}
 };
 
 std::ostream& operator<<(std::ostream& outstream, const NODEC& node);
@@ -104,5 +106,16 @@ bool from_string(T& t, const std::string& s, std::ios_base& (*f)(std::ios_base&)
 {
   std::istringstream iss(s);
   return !(iss >> f >> t).fail();
+}
+template<class Iter, class T>
+Iter binary_find(Iter begin, Iter end, T val)
+{
+    // Finds the lower bound in at most log(last - first) + 1 comparisons
+    Iter i = std::lower_bound(begin, end, val);
+
+    if (i != end && *i == val)
+        return i; // found
+    else
+        return end; // not found
 }
 #endif //CKT_H

@@ -1,5 +1,6 @@
 #include "subckt.h"
 #include <algorithm>
+#include <parallel/algorithm>
 
 SubCkt::SubCkt(const Circuit& ckt) : _ckt(ckt) {
 	_flat = NULL;
@@ -44,7 +45,7 @@ void SubCkt::load(const std::string& memfile) {
 	t >> _ref_node;
 	int z;
 	while(!ifile.eof()) { ifile >> z; add(z);}
-	std::sort(_subckt->begin(), _subckt->end());
+	__gnu_parallel::sort(_subckt->begin(), _subckt->end());
 	std::vector<int>::iterator it = unique(_subckt->begin(), _subckt->end());
 	_subckt->resize(it - _subckt->begin());
 	levelize();
@@ -80,13 +81,13 @@ void SubCkt::grow(unsigned int node) {
 	for (unsigned int i = 0; i < home_node.fot.size(); i++) {
 		grow_recurse_forward(home_node.fot.at(i).second);
 	}
-	std::sort(_subckt->begin(),_subckt->end());
+	__gnu_parallel::sort(_subckt->begin(),_subckt->end());
 	_subckt->resize(std::unique(_subckt->begin(),_subckt->end()) - _subckt->begin());
 }
 
 void SubCkt::grow_recurse_back(unsigned int node) {
 	const NODEC& home_node = _ckt.at(node);
-	if (std::find(_subckt->begin(),_subckt->end(), node) != _subckt->end())
+	if (__gnu_parallel::find(_subckt->begin(),_subckt->end(), node) != _subckt->end())
 		return;
 	_subckt->push_back(node);
 	for (unsigned int i = 0; i < home_node.fin.size(); i++) {
@@ -95,7 +96,7 @@ void SubCkt::grow_recurse_back(unsigned int node) {
 }
 void SubCkt::grow_recurse_forward(unsigned int node) {
 	const NODEC& home_node = _ckt.at(node);
-	if (std::find(_subckt->begin(),_subckt->end(), node) != _subckt->end())
+	if (__gnu_parallel::find(_subckt->begin(),_subckt->end(), node) != _subckt->end())
 		return;
 	_subckt->push_back(node);
 	for (unsigned int i = 0; i < home_node.fot.size(); i++) {
@@ -106,6 +107,7 @@ void SubCkt::grow_recurse_forward(unsigned int node) {
 
 const SubCkt SubCkt::operator/(const SubCkt& b) const {
 	SubCkt sc(this->_ckt);
+
 	for (std::vector<int>::iterator i = _subckt->begin(); i < _subckt->end(); i++) {
 		for (std::vector<int>::iterator j = b.subckt().begin(); j <  b.subckt().end();j++) {
 			if (*i == *j) { sc.add(*i); }
@@ -114,7 +116,7 @@ const SubCkt SubCkt::operator/(const SubCkt& b) const {
 	return sc;
 }
 int SubCkt::in(unsigned int tgt) const {
-	std::vector<int>::iterator is = find(_subckt->begin(), _subckt->end(), tgt);
+	std::vector<int>::iterator is = __gnu_parallel::find(_subckt->begin(), _subckt->end(), tgt);
 	if (is == _subckt->end()) {
 		return -1;
 	} else {

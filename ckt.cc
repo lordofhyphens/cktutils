@@ -1,4 +1,5 @@
 #include "ckt.h"
+#include <parallel/algorithm>
 typedef std::vector<NODEC>::iterator nodeiter;
 Circuit::Circuit() {
 	this->graph = new std::vector<NODEC>();
@@ -122,10 +123,6 @@ void Circuit::load(const char* memfile, const char * ext_id) {
 	}
 	this->graph->insert(graph->end(),g->begin(),g->end());
 	delete g;
-	g = this->graph;
-	std::sort(g->begin(), g->end());
-	std::cerr << "Re-annotating circuit." << std::endl;
-	annotate(g);
 	
 	this->_levels = 1;
 	for (std::vector<NODEC>::iterator a = this->graph->begin(); a < this->graph->end(); a++) {
@@ -136,7 +133,7 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 	std::ifstream tfile(benchfile);
 	this->name = benchfile;
 	this->name.erase(std::remove_if(this->name.begin(), this->name.end(),isspace),this->name.end());
-	this->name.erase(std::find(this->name.begin(),this->name.end(),'.'),this->name.end());
+	this->name.erase(__gnu_parallel::find(this->name.begin(),this->name.end(),'.'),this->name.end());
 	std::vector<NODEC>* g = new std::vector<NODEC>();
 	std::string buffer, id;
 	std::stringstream node;
@@ -167,7 +164,7 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 			std::string finlist = buffer.substr(front+1, back - (front+1));
 			std::string gatetype = buffer.substr(buffer.find("=")+1,front - (buffer.find("=")+1));
 			int nfi = count_if(finlist.begin(), finlist.end(), ispunct) + 1;
-			if (find(g->begin(), g->end(), id) == g->end()) { 
+			if (__gnu_parallel::find(g->begin(), g->end(), id) == g->end()) { 
 				g->push_back(NODEC(id, gatetype, nfi, finlist));
 			} else {
 				// modify the pre-existing node. Node type should be unknown, and PO should be set.
@@ -190,7 +187,7 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 		while (getline(node,buffer,',')) {
 			// figure out which which node has this as a fanout.
 			buffer.append(ext);
-			nodeiter j = find(g->begin(), g->end(), buffer);
+			nodeiter j = __gnu_parallel::find(g->begin(), g->end(), buffer);
 			j->nfo++;
 		}
 	}
@@ -201,7 +198,7 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 		std::string newfin = "";
 		while (getline(node,buffer,',')) {
 			buffer.append(ext);
-			nodeiter j = find(g->begin(), g->end(), buffer);
+			nodeiter j = __gnu_parallel::find(g->begin(), g->end(), buffer);
 			if (j->nfo < 2) {
 				iter->fin.push_back(std::make_pair(j->name, -1));
 				j->fot.push_back(std::make_pair(iter->name, -1));
@@ -241,7 +238,7 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 	g = this->graph;
 
 	std::clog << "Sorting circuit." << std::endl;
-	std::sort(g->begin(), g->end(),nameSort);
+	__gnu_parallel::sort(g->begin(), g->end(),nameSort);
 	std::clog << "Removing duplicate nodes." << std::endl;
 	std::vector<NODEC>::iterator it = unique(g->begin(),g->end(),isDuplicate);
 	g->resize(it - g->begin());
@@ -252,7 +249,7 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 	std::clog << "Levelizing circuit." << std::endl;
 	this->levelize();
 	std::clog << "Sorting circuit." << std::endl;
-	std::sort(g->begin(), g->end());
+	__gnu_parallel::sort(g->begin(), g->end());
 	std::clog << "Annotating circuit." << std::endl;
 	annotate(g);
 }
@@ -310,13 +307,18 @@ int Circuit::levelsize(int l) const {
 void Circuit::annotate(std::vector<NODEC>* g) {
 	for (std::vector<NODEC>::iterator iter = g->begin(); iter < g->end(); iter++) {
 		for (std::vector<std::pair<std::string, int> >::iterator i = iter->fin.begin(); i < iter->fin.end(); i++) {
-			i->second = count_if(g->begin(), find(g->begin(),g->end(),i->first), Yes);
+			const std::vector<NODEC>::iterator a =  __gnu_parallel::find(g->begin(),g->end(),i->first);
+			i->second = __gnu_parallel::count_if(g->begin(), a, Yes);
 		}
 		for (std::vector<std::pair<std::string, int> >::iterator i = iter->fot.begin(); i < iter->fot.end(); i++) {
-			i->second = count_if(g->begin(), find(g->begin(),g->end(),i->first), Yes);
+			const std::vector<NODEC>::iterator a =  __gnu_parallel::find(g->begin(),g->end(),i->first);
+			i->second = __gnu_parallel::count_if(g->begin(), a, Yes);
 		}
+		DPRINT("Finished node %s, %lu/%lu\n", iter->name.c_str(), std::distance(g->begin(),iter), g->size());
 	}
 }
+
+
 int countInLevel(std::vector<NODEC>& v, int level)  {
 	int cnt = 0;
 	for (std::vector<NODEC>::iterator iter = v.begin(); iter < v.end(); iter++) {
