@@ -318,12 +318,12 @@ void Circuit::compute_scratchpad() {
 	next_scratch.push(0);
 	for (std::vector<NODEC>::iterator it = graph->begin(); it < graph->end(); it++) {
 		// go through fan-ins, add those ids to next_scratch if they are a fan-in of this node.
-		for (unsigned int fin = 0; fin < it->nfi; fin++) {
+		for (unsigned int fin = 0; fin < it->fin.size(); fin++) {
 			if (at(it->fin.at(fin).second).scratch >= 0) {
 				next_scratch.push(at(it->fin.at(fin).second).scratch);
 			}
 		}
-		for (unsigned int fot = 0; fot < it->nfo; fot++) {
+		for (unsigned int fot = 0; fot < it->fot.size(); fot++) {
 			if (at(it->fot.at(fot).second).level != (it->level + 1) ) {
 				it->scratch = next_scratch.front();next_scratch.pop();
 				next_scratch.push(++i);
