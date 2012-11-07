@@ -49,11 +49,11 @@ void GPU_Circuit::copy() {
 		}
 		ggraph[i].offset = off;
 		// position of a particular node
-		for (std::vector<std::pair<std::string,int> >::iterator fins = graph->at(i).fin.begin(); fins < graph->at(i).fin.end();fins++) {
+		for (std::vector<std::pair<std::string,unsigned int> >::iterator fins = graph->at(i).fin.begin(); fins < graph->at(i).fin.end();fins++) {
 			offsets[off] = fins->second;//this->id(*fins);
 			off++;
 		}
-		for (std::vector<std::pair<std::string,int> >::iterator fots = graph->at(i).fot.begin(); fots < graph->at(i).fot.end();fots++) {
+		for (std::vector<std::pair<std::string,unsigned int> >::iterator fots = graph->at(i).fot.begin(); fots < graph->at(i).fot.end();fots++) {
 			offsets[off] = fots->second;//this->id(*fots);
 			off++;
 		}

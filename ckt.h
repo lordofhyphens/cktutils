@@ -13,7 +13,6 @@
 #include <utility>
 #include "defines.h"
 #include <stdint.h>
-#include <parallel/algorithm>
 
 #define FBENCH 1 // iscas89 BENCH format.
 // NODE TYPE CONSTANTS 
@@ -33,13 +32,14 @@
 struct NODEC {
 	std::string name;
 	char typ;
-	int nfi, nfo, level;
+	unsigned int nfi, nfo;
+	uint32_t level;
 	int32_t scratch; // memory scratchpad position.
 	int cur_fo;
 	bool po, placed;
 	std::string finlist;
-	std::vector<std::pair<std::string, int > > fin;
-	std::vector<std::pair<std::string, int > > fot;
+	std::vector<std::pair<std::string, uint32_t > > fin;
+	std::vector<std::pair<std::string, uint32_t > > fot;
 	NODEC() { name = "", typ = 0, nfi = 0, nfo = 0, po = false, finlist="";}
 	NODEC(std::string);
 	NODEC(std::string, int type);
@@ -63,7 +63,7 @@ class Circuit {
 		std::string name;
 		void levelize();
 		void mark_lines();
-		int _levels;
+		unsigned int _levels;
 		void annotate(std::vector<NODEC>*);
 	public:
 		Circuit();
@@ -87,19 +87,19 @@ class Circuit {
 		inline unsigned int max_scratchpad() { 
 			return std::max_element(graph->begin(), graph->end(), scratch_compare)->scratch; 
 		}
-		int levelsize(int) const;
+		unsigned int levelsize(unsigned int) const;
 		size_t size() const { return this->graph->size();}
 		void save(const char*); // save a copy of the circuit in its current levelized form
 		void load(const char* memfile); // load a circuit that has been levelized.
 		void load(const char* memfile, const char* ext_id);
-		void reannotate() { __gnu_parallel::sort(this->graph->begin(), this->graph->end()); DPRINT("Annotating.\n"); annotate(this->graph);}
+		void reannotate();
 };
 
 std::ostream& operator<<(std::ostream& outstream, const NODEC& node);
 bool isPlaced(const NODEC& node);
-bool isInLevel(const NODEC& node, int N);
+bool isInLevel(const NODEC& node, unsigned int N);
 
-int countInLevel(std::vector<NODEC>& v, int level);
+unsigned int countInLevel(std::vector<NODEC>& v, unsigned int level);
 bool isUnknown(const NODEC& node) ;
 bool isDuplicate(const NODEC& a, const NODEC& b);
 bool nameSort(const NODEC& a, const NODEC& b);
