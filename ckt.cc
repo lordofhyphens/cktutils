@@ -342,3 +342,67 @@ bool isDuplicate(const NODEC& a, const NODEC& b) {
 bool nameSort(const NODEC& a, const NODEC& b) {
 	return (a.name < b.name);
 }
+
+size_t Circuit::max_level_pair() {
+	size_t max = 0;
+	for (size_t i = 0; i < levels() - 1; i++) {
+		size_t a = levelsize(i) + levelsize(i+1);
+		if (max < a) max = a;
+	}
+	return max;
+}
+
+// Returns the maximum number of nodes not in i that are in j's fan-in
+size_t Circuit::out_of_level_nodes(size_t i, size_t j) {
+	unsigned int index = 0, ref = 0, count = 0;
+	while (at(index).level != j && index < size()) index++;
+	ref = index;
+	for (index; index < ref+levelsize(j); index++) {
+		for (unsigned int fin = 0; fin < at(index).nfi; fin++) {
+			if (at(at(index).fin.at(fin).second).level != j) { count++;}
+		}
+	}
+	return count;
+}
+
+// Check every pair-wise level for the maximum # of nodes that are not in a previous level's fan-in
+size_t Circuit::max_out_of_level_nodes() {
+	size_t max = 0;
+	for (size_t i = 0; i < levels() - 1; i++) {
+		size_t a = out_of_level_nodes(i, i+1);
+		if (max < a) max = a;
+	}
+	return max;
+}
+
+// Compute for every node where it sits in the scratchpad memory.  A node gets
+// a placement in the scratchpad if and only if it has a reference from another
+// node that is in a non-adjacent level.
+// To determine this, only need to check the level of the fan-outs of the current node. 
+// Keep a separate list (temporary) for all nodes and where they are. 
+// At every node, check the fan-ins. If a node in the fan-ins is in the scratchpad, add 
+void Circuit::compute_scratchpad() {
+	std::queue<uint32_t> next_scratch;
+	unsigned int i = 0;
+	next_scratch.push(0);
+	for (std::vector<NODEC>::iterator it = graph->begin(); it < graph->end(); it++) {
+		// go through fan-ins, add those ids to next_scratch if they are a fan-in of this node.
+		for (unsigned int fin = 0; fin < it->fin.size(); fin++) {
+			if (at(it->fin.at(fin).second).scratch >= 0) {
+				next_scratch.push(at(it->fin.at(fin).second).scratch);
+			}
+		}
+		for (unsigned int fot = 0; fot < it->fot.size(); fot++) {
+			if (at(it->fot.at(fot).second).level != (it->level + 1) ) {
+				it->scratch = next_scratch.front();next_scratch.pop();
+				next_scratch.push(++i);
+				// only need in scratchpad once. 
+				fot = it->nfo;
+				continue;
+			}
+		}
+	}
+}
+bool scratch_compare(const NODEC& a, const NODEC& b) {
+	return a.scratch < b.scratch;
+}

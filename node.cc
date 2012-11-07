@@ -19,6 +19,7 @@ void NODEC::initialize(std::string id, int type, int nfi, int nfo, bool po, std:
 	this->nfi = nfi;
 	this->nfo = nfo;
 	this->po = po;
+	this->scratch = -1;
 	this->finlist = finlist;
 	this->finlist.erase(std::remove_if(this->finlist.begin(), this->finlist.end(),isspace),this->finlist.end());
 

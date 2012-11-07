@@ -6,7 +6,9 @@
 #include <stdint.h>
 
 typedef struct GPU_NODE_type {
-	int type, nfi, nfo, po, offset,level; // initial offset for fanin and fanout
+	uint16_t nfi, nfo, level;
+	uint8_t type, po;
+	int32_t scratch;
 } GPUNODE;
 
 // subclass of Circuit to provide GPU-friendly representation of the circuit.

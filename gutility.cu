@@ -13,7 +13,7 @@ void checkCudaError(const char* file, int line) {
 	cudaError_t err = cudaGetLastError();
 	if (err != cudaSuccess) { DPRINT("Error %s : before %s:%d\n", cudaGetErrorString(err),file,line);}
 }
-void selectGPU() {
+uint8_t selectGPU() {
 	int num_devices, device;
 	cudaGetDeviceCount(&num_devices);
 	cudaDeviceProp properties;
@@ -28,18 +28,41 @@ void selectGPU() {
 		}
 		cudaSetDevice(max_device);
 		cudaGetDeviceProperties(&properties, max_device);
-		DPRINT("Selected %s as GPU.\n", properties.name);
-	}
-}
+		cudaDeviceSetCacheConfig(cudaFuncCachePreferL1);
 
-int gpuCalculateSimulPatterns(int lines, int patterns) {
+		DPRINT("Selected %s as GPU.\n", properties.name);
+		return max_device;
+	}
+	return 0;
+}
+size_t gpuCheckMemory() {
+	size_t freeMem = 0;
+	size_t totalMem = 0;
+	cudaMemGetInfo(&freeMem, &totalMem);  
+	DPRINT("Memory avaliable: Free: %lu, Total: %lu\n",freeMem, totalMem); 
+	return freeMem;
+
+}
+#define DIV_UP(x, y) ( (y) * ( ((x)+(y)-1) / (y) ) )
+int gpuCalculateSimulPatterns(unsigned int lines, unsigned int patterns, uint8_t deviceID) {
 	// get free memory
-	size_t free_mem, total_mem;
+	cudaDeviceProp gprop; 
+	cudaGetDeviceProperties(&gprop, deviceID);
+	DPRINT("Calculating for %u lines, %u patterns\n", lines, patterns);
+	size_t free_mem;
+	free_mem = gpuCheckMemory();
 	int allowed_patterns;
-	cudaMemGetInfo(&free_mem, &total_mem);
-	// added a buffer 	
-	allowed_patterns = (free_mem + (lines*sizeof(int))) / (lines*(sizeof(uint32_t)*2.5) + sizeof(uint8_t)*1.5);
-	return min(patterns, allowed_patterns -(allowed_patterns % 32));
+	// added a buffer
+	allowed_patterns = (free_mem - sizeof(int2)*lines ) / (lines*(sizeof(int32_t)+sizeof(uint8_t)));
+	DPRINT("Allowed patterns: %d, ", allowed_patterns);
+	//allowed_patterns = (free_mem + (lines*sizeof(uint32_t))) / (lines*(sizeof(uint32_t)*4) + sizeof(uint8_t)*1.5);
+	while (DIV_UP(allowed_patterns*sizeof(int32_t), gprop.textureAlignment) > allowed_patterns*sizeof(int32_t)) {
+		allowed_patterns-=1;
+	}
+	allowed_patterns /= 32;
+	allowed_patterns *= 32;
+	DPRINT("%d corrected for 32\n", allowed_patterns);
+	return min(patterns, allowed_patterns);
 }
 std::string gpuMemCheck(){
 	size_t free_mem, total_mem;

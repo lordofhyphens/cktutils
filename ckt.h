@@ -6,6 +6,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <list>
 #include <algorithm>
 #include <cassert>
@@ -33,6 +34,7 @@ struct NODEC {
 	std::string name;
 	char typ;
 	int nfi, nfo, level;
+	int32_t scratch; // memory scratchpad position.
 	int cur_fo;
 	bool po, placed;
 	std::string finlist;
@@ -54,6 +56,7 @@ struct NODEC {
 		void load(std::string attr);
 };
 
+bool scratch_compare(const NODEC& a, const NODEC& b);
 class Circuit {
 	protected:
 		std::vector<NODEC>* graph;
@@ -74,8 +77,16 @@ class Circuit {
 		bool nodelevel(unsigned int n, unsigned int m) const;
 		void read_bench(const char* benchfile, const char* ext = "");
 		void print() const;
-		NODEC& at(int node) const { return this->graph->at(node);}
+		inline NODEC& at(int node) const { return this->graph->at(node);}
 		inline size_t levels() const { return this->_levels;}
+		size_t max_level_pair();
+		size_t out_of_level_nodes(size_t, size_t);
+		size_t max_out_of_level_nodes();
+		void compute_scratchpad(); // calculates the scratchpad
+		// Assuming that the scratchpad has been computed, gives the largest ID required for scratchpad memory.
+		inline unsigned int max_scratchpad() { 
+			return std::max_element(graph->begin(), graph->end(), scratch_compare)->scratch; 
+		}
 		int levelsize(int) const;
 		size_t size() const { return this->graph->size();}
 		void save(const char*); // save a copy of the circuit in its current levelized form

@@ -16,13 +16,14 @@ GPU_Data::GPU_Data(size_t rows, size_t columns) {
 	this->initialize(rows, columns, rows);
 }
 GPU_Data::GPU_Data(size_t rows, size_t columns, uint32_t blockwidth) {
-	this->_gpu = new ARRAY2D<uint8_t>();
+	this->_gpu = NULL;
 	this->initialize(rows, columns, blockwidth);
 }
 GPU_Data::~GPU_Data() {
 	if (this->_gpu->data != NULL) {
 		cudaFree(this->_gpu->data);
 	}
+	delete _gpu;
 }
 ARRAY2D<uint8_t> GPU_Data::gpu(uint32_t ref) {
 	if (ref == this->_current) {
@@ -66,6 +67,7 @@ uint32_t GPU_Data::initialize(size_t in_columns, size_t in_rows, uint32_t block_
 		}
 		
 	}
+	assert(_gpu->data != NULL);
 	this->_current = 0;
 	this->_block_size = block_width;
 	this->_width = in_columns;
@@ -95,7 +97,6 @@ uint32_t GPU_Data::copy(uint32_t ref) {
 		return ERR_NONE;
 	return error;
 }
-
 uint32_t GPU_Data::refresh() {
 	uint32_t error;
 	ARRAY2D<uint8_t>* cpu = &(this->_data->at(this->_current));
@@ -108,7 +109,16 @@ uint32_t GPU_Data::refresh() {
 }
 std::string GPU_Data::debug() {
 	std::stringstream st; 
-	st << "GPU DATA,width="<<this->width()<<",height="<< this->height()<< ",pitch="<<this->gpu().pitch<<",blocksize="<< this->_block_size << ",chunks="<<this->_data->size()<<",current="<<this->_current << std::endl;
+	if (_data != NULL && _gpu != NULL) {
+		st << "GPU DATA,width="<<this->width();
+		st 	<<",height="<< this->height();
+		st	<< ",pitch=" << this->gpu().pitch;
+		st	<<",blocksize=" << this->_block_size ;
+		st	<< ",chunks=" <<this->_data->size() ;
+		st	<<",current="<<this->_current << std::endl;;
+	} else {
+		st << "GPU DATA: Internal data item is null." << std::endl;
+	}
 	return st.str();
 }
 

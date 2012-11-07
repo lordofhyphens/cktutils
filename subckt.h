@@ -36,7 +36,7 @@ class SubCkt {
 		void add(const int& n) { add(this->_ckt, n);}
 		void add(const Circuit&, const int&);
 		void copy(); // Flattens and copies the subckt to GPU memory.
-		void clear();
+		void clear(); // Deallocate the copy of the subckt in GPU memory.
 		int in(unsigned int) const;
 		inline int levels() const { return _levels->size() - 1; }
 		inline int levelsize(const unsigned int n) const { return ( n < _levels->size() ? _levels->at(n) : 0); }

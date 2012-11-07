@@ -21,6 +21,7 @@ GPU_Circuit::~GPU_Circuit() {
 		cudaFree(this->_gpu_graph);
 		this->_gpu_graph = NULL;
 	}
+
 }
 // Copy the circuit representation to the GPU.
 void GPU_Circuit::copy() {
@@ -41,6 +42,7 @@ void GPU_Circuit::copy() {
 		ggraph[i].nfo = graph->at(i).fot.size();
 		ggraph[i].po = graph->at(i).po;
 		ggraph[i].level = graph->at(i).level;
+		ggraph[i].scratch = graph->at(i).scratch; // copy the scratchpad index
 		if (graph->at(i).typ == 0) {
 			std::cout << graph->at(i).name << " is type 0?"<<std::endl;
 			continue;
@@ -61,6 +63,8 @@ void GPU_Circuit::copy() {
 	cudaMalloc(&(this->_offset), sizeof(uint32_t)*off);
 	cudaMemcpy(this->_gpu_graph, ggraph, sizeof(GPUNODE)*(g->size()),cudaMemcpyHostToDevice);
 	cudaMemcpy(this->_offset, offsets, sizeof(uint32_t)*off,cudaMemcpyHostToDevice);
+	free(ggraph);
+	free(offsets);
 }
 
 uint32_t GPU_Circuit::id(std::string name) const {
