@@ -5,7 +5,7 @@
 * It returns the count of input patterns. All don'tcares 
 * are set to '0'.
 */
-std::pair<size_t, size_t> get_vector_dim(char* fvec) {
+std::pair<size_t, size_t> get_vector_dim(const char* fvec) {
 	std::string str1;
 	std::ifstream tfile(fvec);
 	size_t lines = 0;
@@ -15,10 +15,10 @@ std::pair<size_t, size_t> get_vector_dim(char* fvec) {
 		inputs = str1.size();
 	}
 	tfile.close();
-	return std::make_pair<size_t,size_t>(lines, inputs);
+	return std::make_pair(lines, inputs);
 }
 #ifndef CPU
-int read_vectors(GPU_Data& pack, char* fvec, int chunksize) {
+int read_vectors(GPU_Data& pack,const char* fvec, int chunksize) {
 	std::string str1;
 	std::ifstream tfile(fvec);
 	int chunk = 0;
@@ -46,7 +46,7 @@ int read_vectors(GPU_Data& pack, char* fvec, int chunksize) {
 	return ERR_NONE;
 }
 #endif 
-int read_vectors(CPU_Data& pack, char* fvec, int chunksize) {
+int read_vectors(CPU_Data& pack,const char* fvec, int chunksize) {
 	std::string str1;
 	std::ifstream tfile(fvec);
 	int chunk = 0;

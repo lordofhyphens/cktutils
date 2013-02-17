@@ -4,6 +4,7 @@ typedef std::vector<NODEC>::iterator nodeiter;
 Circuit::Circuit() {
 	this->graph = new std::vector<NODEC>();
 	this->_levels = 1;
+	this->__cached_levelsize = -1;
 } 
 Circuit::~Circuit() {
 	delete this->graph;
@@ -301,6 +302,8 @@ void Circuit::print() const {
 unsigned int Circuit::levelsize(unsigned int l) const {
 	return countInLevel(*graph, l);
 }
+
+
 // labels each fanin of each circuit 
 void Circuit::annotate(std::vector<NODEC>* g) {
 	for (std::vector<NODEC>::iterator iter = g->begin(); iter < g->end(); iter++) {
@@ -315,14 +318,16 @@ void Circuit::annotate(std::vector<NODEC>* g) {
 		DPRINT("Finished node %s, %lu/%lu\n", iter->name.c_str(), std::distance(g->begin(),iter), g->size());
 	}
 }
+inline bool isInLevel(const NODEC& node, const unsigned int& N) { return node.level == N; }
 
+unsigned int countInLevel(const std::vector<NODEC>& v, const unsigned int& level)  {
+		unsigned int cnt = 0;
+		cnt = std::count_if(v.begin(), v.end(), std::bind(isInLevel, std::placeholders::_1, level)); 
+/*		for (std::vector<NODEC>::const_iterator iter = v.begin(); iter < v.end(); iter++) {
+			if (isInLevel(*iter, level)) 
+				cnt = cnt + 1;
+		}*/
 
-unsigned int countInLevel(std::vector<NODEC>& v, unsigned int level)  {
-	unsigned int cnt = 0;
-	for (std::vector<NODEC>::iterator iter = v.begin(); iter < v.end(); iter++) {
-		if (isInLevel(*iter, level)) 
-			cnt++;
-	}
 	return cnt;
 }
 bool Circuit::nodelevel(unsigned int n, unsigned int m) const {
@@ -331,15 +336,12 @@ bool Circuit::nodelevel(unsigned int n, unsigned int m) const {
 bool isUnknown(const NODEC& node) {
 	return node.typ == UNKN;
 }
-bool isInLevel(const NODEC& node, unsigned int N) {
-	return node.level == N;
-}
+
+
 bool isDuplicate(const NODEC& a, const NODEC& b) {
 	return (a.name == b.name && a.typ == b.typ);
 }
-bool nameSort(const NODEC& a, const NODEC& b) {
-	return (a.name < b.name);
-}
+inline bool nameSort(const NODEC& a, const NODEC& b) { return (a.name < b.name); }
 
 size_t Circuit::max_level_pair() {
 	size_t max = 0;

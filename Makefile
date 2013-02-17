@@ -13,7 +13,7 @@ endif
 .SUFFIXES:
 .SUFFIXES: .o .cu .cc
 .cc.o: $(objs:.o=.cc) $(objs:.o=.h)
-	$(CXX) -c $(CFLAGS) $(CPPFLAGS) -march=native -fopenmp -o $@ $<
+	$(CXX) -c $(CFLAGS) $(CPPFLAGS) -std=c++11 -march=native -fopenmp -o $@ $<
 .cu.o: 
 	$(GPCXX) -c $(NVCFLAGS) -o $@ $<
 

@@ -9,6 +9,7 @@
 #include <queue>
 #include <list>
 #include <algorithm>
+#include <functional>
 #include <cassert>
 #include <utility>
 #include "defines.h"
@@ -38,6 +39,7 @@ struct NODEC {
 	int cur_fo;
 	bool po, placed;
 	std::string finlist;
+	
 	std::vector<std::pair<std::string, uint32_t > > fin;
 	std::vector<std::pair<std::string, uint32_t > > fot;
 	NODEC() { name = "", typ = 0, nfi = 0, nfo = 0, po = false, finlist="";}
@@ -58,6 +60,8 @@ struct NODEC {
 
 bool scratch_compare(const NODEC& a, const NODEC& b);
 class Circuit {
+	private:
+		int __cached_levelsize;
 	protected:
 		std::vector<NODEC>* graph;
 		std::string name;
@@ -97,9 +101,9 @@ class Circuit {
 
 std::ostream& operator<<(std::ostream& outstream, const NODEC& node);
 bool isPlaced(const NODEC& node);
-bool isInLevel(const NODEC& node, unsigned int N);
+bool isInLevel(const NODEC& node, const unsigned int& N);
 
-unsigned int countInLevel(std::vector<NODEC>& v, unsigned int level);
+unsigned int countInLevel(const std::vector<NODEC>& v, const unsigned int& level);
 bool isUnknown(const NODEC& node) ;
 bool isDuplicate(const NODEC& a, const NODEC& b);
 bool nameSort(const NODEC& a, const NODEC& b);
