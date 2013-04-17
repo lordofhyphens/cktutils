@@ -59,11 +59,12 @@ bool NODEC::operator==(const std::string& other) const {
 }
 bool NODEC::operator==(const NODEC& other) const {
  // if a is not in the fanin of b and vice-versa, they are considered "equal"
-	return (find_if(this->fin.begin(), this->fin.end(), StringFinder(other.name)) != this->fin.end()) && (find_if(other.fin.begin(),other.fin.end(), StringFinder(this->name)) != other.fin.end());
+//	return (find_if(this->fin.begin(), this->fin.end(), StringFinder(other.name)) != this->fin.end()) && (find_if(other.fin.begin(),other.fin.end(), StringFinder(this->name)) != other.fin.end());
+	return (level == other.level) && (name == other.name);
 }
 bool NODEC::operator<(const NODEC& other) const {
 	// if a is in the fanin of b, then a < b
-	return this->level < other.level;
+	return (this->level < other.level) || (level == other.level && name < other.name);
 }
 std::ostream& operator<<(std::ostream& outstream, const NODEC& node) {
 	outstream << node.name << "\t";

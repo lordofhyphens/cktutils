@@ -1,13 +1,21 @@
 objs=ckt.o cpudata.o iscas.o node.o sort.o subckt.o utility.o vectors.o mergestate.o
 gobjs=gutility.o gpuckt.o gpudata.o g_subckt.o
-NVCC=/opt/net/apps/cuda/bin/nvcc
-NVCFLAGS=-arch=sm_20 -I/opt/net/apps/cuda/include -ccbin g++-4.4
+CXX=g++-4.7
+ifndef CUDA
+	CUDA=/opt/net/apps/cuda-5.0
+endif
+ifndef GPCXX
+	GPCXX=${CUDA}/bin/nvcc
+endif
+ifndef NVCFLAGS 
+	NVCFLAGS=-arch=sm_20 -I${CUDA}/include -ccbin g++-4.4
+endif
 .SUFFIXES:
 .SUFFIXES: .o .cu .cc
 .cc.o: $(objs:.o=.cc) $(objs:.o=.h)
-	$(CXX) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+	$(CXX) -c $(CFLAGS) $(CPPFLAGS) -std=c++11 -march=native -fopenmp -o $@ $<
 .cu.o: 
-	$(NVCC) -c $(NVCFLAGS) -o $@ $<
+	$(GPCXX) -c $(NVCFLAGS) -o $@ $<
 
 all: $(objs) 
 gpu: $(gobjs)

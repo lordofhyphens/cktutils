@@ -9,6 +9,7 @@
 #include <queue>
 #include <list>
 #include <algorithm>
+#include <functional>
 #include <cassert>
 #include <utility>
 #include "defines.h"
@@ -32,13 +33,15 @@
 struct NODEC {
 	std::string name;
 	char typ;
-	int nfi, nfo, level;
+	unsigned int nfi, nfo;
+	uint32_t level;
 	int32_t scratch; // memory scratchpad position.
 	int cur_fo;
 	bool po, placed;
 	std::string finlist;
-	std::vector<std::pair<std::string, int > > fin;
-	std::vector<std::pair<std::string, int > > fot;
+	
+	std::vector<std::pair<std::string, uint32_t > > fin;
+	std::vector<std::pair<std::string, uint32_t > > fot;
 	NODEC() { name = "", typ = 0, nfi = 0, nfo = 0, po = false, finlist="";}
 	NODEC(std::string);
 	NODEC(std::string, int type);
@@ -57,13 +60,15 @@ struct NODEC {
 
 bool scratch_compare(const NODEC& a, const NODEC& b);
 class Circuit {
+	private:
+		int __cached_levelsize;
 	protected:
 		std::vector<NODEC>* graph;
 		std::string name;
 		void levelize();
 		void mark_lines();
-		int _levels;
-		void annotate();
+		unsigned int _levels;
+		void annotate(std::vector<NODEC>*);
 	public:
 		Circuit();
 		Circuit(int type, const char* benchfile) {
@@ -74,7 +79,7 @@ class Circuit {
 		}
 		~Circuit();
 		bool nodelevel(unsigned int n, unsigned int m) const;
-		void read_bench(const char* benchfile);
+		void read_bench(const char* benchfile, const char* ext = "");
 		void print() const;
 		inline NODEC& at(int node) const { return this->graph->at(node);}
 		inline size_t levels() const { return this->_levels;}
@@ -86,17 +91,19 @@ class Circuit {
 		inline unsigned int max_scratchpad() { 
 			return std::max_element(graph->begin(), graph->end(), scratch_compare)->scratch; 
 		}
-		int levelsize(int) const;
+		unsigned int levelsize(unsigned int) const;
 		size_t size() const { return this->graph->size();}
 		void save(const char*); // save a copy of the circuit in its current levelized form
 		void load(const char* memfile); // load a circuit that has been levelized.
+		void load(const char* memfile, const char* ext_id);
+		void reannotate();
 };
 
 std::ostream& operator<<(std::ostream& outstream, const NODEC& node);
 bool isPlaced(const NODEC& node);
-bool isInLevel(const NODEC& node, int N);
+bool isInLevel(const NODEC& node, const unsigned int& N);
 
-int countInLevel(std::vector<NODEC>& v, int level);
+unsigned int countInLevel(const std::vector<NODEC>& v, const unsigned int& level);
 bool isUnknown(const NODEC& node) ;
 bool isDuplicate(const NODEC& a, const NODEC& b);
 bool nameSort(const NODEC& a, const NODEC& b);
@@ -114,5 +121,16 @@ bool from_string(T& t, const std::string& s, std::ios_base& (*f)(std::ios_base&)
 {
   std::istringstream iss(s);
   return !(iss >> f >> t).fail();
+}
+template<class Iter, class T>
+Iter binary_find(Iter begin, Iter end, T val)
+{
+    // Finds the lower bound in at most log(last - first) + 1 comparisons
+    Iter i = std::lower_bound(begin, end, val);
+
+    if (i != end && *i == val)
+        return i; // found
+    else
+        return end; // not found
 }
 #endif //CKT_H
