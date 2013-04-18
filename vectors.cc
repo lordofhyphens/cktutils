@@ -74,10 +74,9 @@ int read_vectors(CPU_Data& pack,const char* fvec, int chunksize) {
 	return ERR_NONE;
 }
 
-int read_vectors(std::vector<std::vector<bool> >& vec, char* fvec, int chunksize) {
+int read_vectors(std::vector<std::vector<bool> >& vec, const char* fvec) {
 	std::string str1;
 	std::ifstream tfile(fvec);
-	int chunk = 0;
 	int lines = 0;
 	while(getline(tfile,str1)) {
 		if (str1.find("#") != std::string::npos) 
@@ -87,14 +86,9 @@ int read_vectors(std::vector<std::vector<bool> >& vec, char* fvec, int chunksize
 		// determine the placement in the array
 		for (unsigned int j = 0; j < str1.size(); j++) {
 			z[j] = ((str1[j] == '0') ? 0 : 1);
-//			DPRINT("%2d ",REF2D(char, pack.cpu(chunk).data,pack.cpu().pitch,lines, j) );
 		}
 		lines++;
 		vec.push_back(z);
-		if (lines > chunksize) {
-			lines = 0;
-			chunk++;
-		}
 	}
 	std::cerr << " All vectors have been read." << std::endl;
 	tfile.close();

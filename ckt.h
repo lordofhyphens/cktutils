@@ -82,6 +82,7 @@ class Circuit {
 		void read_bench(const char* benchfile, const char* ext = "");
 		void print() const;
 		inline NODEC& at(int node) const { return this->graph->at(node);}
+		inline NODEC& operator[](int node) const { return this->graph->at(node);}
 		inline size_t levels() const { return this->_levels;}
 		size_t max_level_pair();
 		size_t out_of_level_nodes(size_t, size_t);

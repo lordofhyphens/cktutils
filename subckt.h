@@ -40,7 +40,9 @@ class SubCkt {
 		int in(unsigned int) const;
 		inline int levels() const { return _levels->size() - 1; }
 		inline int levelsize(const unsigned int n) const { return ( n < _levels->size() ? _levels->at(n) : 0); }
-		inline int ref(const unsigned int n) const { return _subckt->at(n); }
+		// translates subckt position to ckt position
+		inline int ref(const unsigned int n) const { return _subckt->at(n); } 
+		// translates ckt position to subckt position
 		inline int reverse_ref(const unsigned int n, const unsigned int g) const { 
 			std::vector<int>::iterator a = std::find(_subckt->begin(), _subckt->begin()+g,n);
 			if (a < _subckt->begin()+g)
@@ -48,7 +50,15 @@ class SubCkt {
 			else 
 				return size()+1;
 		}
+		inline int reverse_ref(const unsigned int n) const { 
+			std::vector<int>::iterator a = std::find(_subckt->begin(), _subckt->end(),n);
+			if (a < _subckt->end())
+				return std::distance(_subckt->begin(), a); 
+			else 
+				return size()+1;
+		}
 		// Read-only copy of a NODEC.
+		inline NODEC& operator[](const unsigned int n) const { return _ckt.at(ref(n)); }
 		inline NODEC& at(const unsigned int n) const { return _ckt.at(ref(n)); }
 		inline const Circuit& ckt() const { return _ckt; }
 		bool operator<(const SubCkt&) const;
