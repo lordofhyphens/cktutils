@@ -25,7 +25,14 @@ class GPU_Data : public CPU_Data {
 		size_t _block_size;
 		ARRAY2D<uint8_t>* _gpu; // fixed size GPU memory space.
 		uint32_t copy(uint32_t);
+		size_t rows, columns, bl_width;
 	public: 
+		void unload() {
+			if (this->_gpu->data != NULL) {
+				cudaFree(this->_gpu->data);
+			}
+			this->_gpu->data = NULL;
+		} // deletes copy of data on GPU
 		inline g_GPU_DATA gpu_pack(int ref) { g_GPU_DATA z; ARRAY2D<uint8_t> t = gpu(ref); z.pitch = t.pitch; z.width = t.width; z.height = t.height; z.data = t.data; return z; }
 		ARRAY2D<uint8_t> gpu(uint32_t ref); // this will throw an out_of_range exception if ref > size; Also changes current.
 		ARRAY2D<uint8_t> gpu() { return gpu(this->_current);}

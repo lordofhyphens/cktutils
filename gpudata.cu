@@ -24,7 +24,7 @@ GPU_Data::~GPU_Data() {
 		cudaFree(this->_gpu->data);
 	}
 	delete _gpu;
-}
+} 
 ARRAY2D<uint8_t> GPU_Data::gpu(uint32_t ref) {
 	if (ref == this->_current) {
 		return *(this->_gpu);
@@ -49,6 +49,9 @@ ARRAY2D<uint8_t> GPU_Data::gpu(uint32_t ref) {
 
 // total size in columns, rows. 
 uint32_t GPU_Data::initialize(size_t in_columns, size_t in_rows, uint32_t block_width) {
+	rows = in_rows;
+	columns = in_columns;
+	bl_width = block_width;
 	cudaError_t err = cudaSuccess;
 	uint32_t chunks = (in_columns / block_width) + ((in_columns % block_width) > 0);
 
@@ -79,6 +82,9 @@ uint32_t GPU_Data::initialize(size_t in_columns, size_t in_rows, uint32_t block_
 uint32_t GPU_Data::copy(uint32_t ref) {
 	uint32_t error;
 //	DPRINT("%s:%d - Copying chunk %d from GPU, %d to GPU.\n",__FILE__,__LINE__,_current, ref);
+	if (this->_gpu->data == NULL) { // Re-allocate GPU memory.
+		error = cudaMallocPitch(&(this->_gpu->data), &(this->_gpu->pitch), sizeof(uint8_t)*this->_gpu->width, in_rows);
+	}
 	ARRAY2D<uint8_t>* cpu = &(this->_data->at(this->_current));
 	ARRAY2D<uint8_t>* gpu = this->_gpu;
 //	DPRINT("%s:%d - Memcpy from GPU\n", __FILE__,__LINE__);
@@ -99,6 +105,9 @@ uint32_t GPU_Data::copy(uint32_t ref) {
 }
 uint32_t GPU_Data::refresh() {
 	uint32_t error;
+	if (this->_gpu->data == NULL) { // Re-allocate GPU memory.
+		error = cudaMallocPitch(&(this->_gpu->data), &(this->_gpu->pitch), sizeof(uint8_t)*this->_gpu->width, in_rows);
+	}
 	ARRAY2D<uint8_t>* cpu = &(this->_data->at(this->_current));
 	ARRAY2D<uint8_t>* gpu = this->_gpu;
 	cudaMemcpy2D(gpu->data, gpu->pitch, cpu->data, cpu->pitch, cpu->width*sizeof(uint8_t), cpu->height, cudaMemcpyHostToDevice);
