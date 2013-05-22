@@ -6,15 +6,22 @@
 * It returns the count of input patterns. All don'tcares 
 * are set to '0'.
 */
-std::pair<size_t, size_t> get_vector_dim(const char* fvec) {
+std::pair<size_t, size_t> get_vector_dim(const char fvec[]) {
 	std::string str1;
 	std::ifstream tfile(fvec);
+	if (!tfile) { 
+		DPRINT("Failed to open file %s.\n", fvec);
+		return std::make_pair(0,0); //early abort
+	}
 	size_t lines = 0;
 	size_t inputs = 0;
-	while(getline(tfile,str1)) {
+	getline(tfile,str1);
+	while( getline(tfile,str1)) {
 		lines++;
 		inputs = str1.size();
 	}
+	assert(lines > 0);
+	assert(inputs > 0);
 	tfile.close();
 	return std::make_pair(lines, inputs);
 }

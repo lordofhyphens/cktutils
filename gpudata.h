@@ -24,17 +24,12 @@ class GPU_Data : public CPU_Data {
 	private:
 		size_t _block_size;
 		ARRAY2D<uint8_t>* _gpu; // fixed size GPU memory space.
-		uint32_t copy(uint32_t);
+		uint32_t copy(uint32_t, bool coherent = false); // copy CPU to GPU. If coherent=true, performs a GPU<->CPU swap
 		size_t rows, columns, bl_width;
 	public: 
-		void unload() {
-			if (this->_gpu->data != NULL) {
-				cudaFree(this->_gpu->data);
-			}
-			this->_gpu->data = NULL;
-		} // deletes copy of data on GPU
+		void unload();
 		inline g_GPU_DATA gpu_pack(int ref) { g_GPU_DATA z; ARRAY2D<uint8_t> t = gpu(ref); z.pitch = t.pitch; z.width = t.width; z.height = t.height; z.data = t.data; return z; }
-		ARRAY2D<uint8_t> gpu(uint32_t ref); // this will throw an out_of_range exception if ref > size; Also changes current.
+		ARRAY2D<uint8_t> gpu(uint32_t ref, bool coherent = false); // this will throw an out_of_range exception if ref > size; Also changes current.
 		ARRAY2D<uint8_t> gpu() { return gpu(this->_current);}
 		uint32_t refresh(); // ensures that the GPU memory space is equivalent to cpu-current.
 		size_t block_width() { return this->_block_size;}
