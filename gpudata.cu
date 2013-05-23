@@ -13,11 +13,11 @@ GPU_Data::GPU_Data() {
 }
 GPU_Data::GPU_Data(size_t rows, size_t columns) {
 	this->_gpu = new ARRAY2D<uint8_t>();
-	this->initialize(rows, columns, rows);
+	this->initialize(rows+1, columns, rows+1);
 }
 GPU_Data::GPU_Data(size_t rows, size_t columns, uint32_t blockwidth) {
 	this->_gpu = NULL;
-	this->initialize(rows, columns, blockwidth);
+	this->initialize(rows+1, columns, blockwidth+1);
 }
 GPU_Data::~GPU_Data() {
 	if (this->_gpu->data != NULL) {
@@ -141,35 +141,16 @@ std::string GPU_Data::debug() {
 	return st.str();
 }
 
-__global__ void kernShift(uint8_t* array, uint8_t* tmpar, uint32_t pitch, uint32_t width, uint32_t height) {
-	uint8_t tmp;
-	uint32_t tid = (blockIdx.x *THREAD_SHIFT) + threadIdx.x;
-	
-	if (threadIdx.x < height) {
-		tmp = REF2D(uint8_t,array,pitch, 0, tid);
-		for (uint32_t i = 0; i < width-1; i++) {
-			REF2D(uint8_t,array,pitch, i, tid) = REF2D(uint8_t,array,pitch, i+1, tid);
-		}
-		REF2D(uint8_t,array,pitch, width-1, tid) = tmp;
-	}
-}
 
-void gpu_shift(GPU_Data& pack) {
-	uint32_t per = (pack.gpu().height / THREAD_SHIFT) + ((pack.gpu().height % THREAD_SHIFT) > 0);
-	uint8_t* tmpspace;
-	cudaMalloc(&tmpspace, sizeof(uint8_t)*pack.gpu().height);
-	kernShift<<<per,THREAD_SHIFT>>>(pack.gpu().data, tmpspace, pack.gpu().pitch,pack.gpu().width,pack.gpu().height);
-	cudaDeviceSynchronize();
-	assert(cudaGetLastError() == cudaSuccess);
-}
 
 void debugDataOutput(ARRAY2D<uint8_t> results, std::string outfile = "simdata.log") {
 #ifndef NDEBUG
 	uint8_t *lvalues;
 	std::ofstream ofile(outfile.c_str());
 
-	lvalues = (uint8_t*)malloc(results.height*results.pitch);
-	cudaMemcpy2D(lvalues,results.pitch,results.data,results.pitch,results.width,results.height,cudaMemcpyDeviceToHost);
+	lvalues = (uint8_t*)malloc((results.height)*results.pitch);
+	cudaError_t err = cudaMemcpy2D(lvalues,results.pitch,results.data,results.pitch,results.width,results.height,cudaMemcpyDeviceToHost);
+	assert (err == cudaSuccess);
 	for (uint32_t r = 0;r < results.width; r++) {
 		for (uint32_t i = 0; i < results.height; i++) {
 			uint8_t z = REF2D(uint8_t, lvalues, results.pitch, r, i);
