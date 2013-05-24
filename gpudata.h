@@ -44,4 +44,5 @@ class GPU_Data : public CPU_Data {
 
 void gpu_shift(GPU_Data& pack);
 void debugDataOutput(ARRAY2D<uint8_t> results, std::string outfile);
+void debugDataOutput(GPU_Data& results, std::string outfile);
 #endif //GPUDATA_H

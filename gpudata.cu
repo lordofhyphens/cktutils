@@ -141,7 +141,25 @@ std::string GPU_Data::debug() {
 	return st.str();
 }
 
+void debugDataOutput(GPU_Data& results, std::string outfile = "simdata.log") {
+#ifndef NDEBUG
+	uint8_t *lvalues;
+	std::ofstream ofile(outfile.c_str());
 
+	lvalues = (uint8_t*)malloc((results.gpu().height)*results.gpu().pitch);
+	cudaError_t err = cudaMemcpy2D(lvalues,results.gpu().pitch,results.gpu().data,results.gpu().pitch,results.gpu().width,results.gpu().height,cudaMemcpyDeviceToHost);
+	assert (err == cudaSuccess);
+	for (uint32_t r = 0;r < results.width(); r++) {
+		for (uint32_t i = 0; i < results.height(); i++) {
+			uint8_t z = REF2D(uint8_t, lvalues, results.gpu().pitch, r, i);
+			ofile << (uint32_t)z;
+		}
+		ofile << std::endl;
+	}
+	free(lvalues);
+	ofile.close();
+#endif
+}
 
 void debugDataOutput(ARRAY2D<uint8_t> results, std::string outfile = "simdata.log") {
 #ifndef NDEBUG
