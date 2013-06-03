@@ -30,7 +30,7 @@ ARRAY2D<uint8_t> GPU_Data::gpu(uint32_t ref, bool coherent) {
 		if (this->_gpu->data == NULL) { this->copy(ref); }
 		return *(this->_gpu);
 	}
-//	DPRINT("%s:%d - Switching to chunk %d\n", __FILE__, __LINE__, ref);
+	DPRINT("%s:%d - Switching to chunk %d\n", __FILE__, __LINE__, ref);
 	uint32_t tmp = this->_current;
 	uint32_t err; 
 	try {

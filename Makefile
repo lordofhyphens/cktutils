@@ -1,14 +1,14 @@
 objs=ckt.o cpudata.o iscas.o node.o sort.o subckt.o utility.o vectors.o mergestate.o
 gobjs=gutility.o gpuckt.o gpudata.o g_subckt.o
 CXX=g++-4.7
-ifndef CUDA
-	CUDA=/opt/net/apps/cuda-5.0
+ifndef CUDA_DIR
+	CUDA_DIR=/opt/net/apps/cuda-5.0
 endif
 ifndef GPCXX
-	GPCXX=${CUDA}/bin/nvcc
+	GPCXX=${CUDA_DIR}/bin/nvcc
 endif
 ifndef NVCFLAGS 
-	NVCFLAGS=-arch=sm_20 -I${CUDA}/include -ccbin g++-4.4
+	NVCFLAGS=-arch=sm_20 -I${CUDA_DIR}/include -ccbin g++-4.4
 endif
 .SUFFIXES:
 .SUFFIXES: .o .cu .cc

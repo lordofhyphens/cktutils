@@ -54,6 +54,7 @@ int gpuCalculateSimulPatterns(unsigned int lines, unsigned int patterns, uint8_t
 	int allowed_patterns;
 	// added a buffer
 	allowed_patterns = (free_mem - sizeof(int2)*lines ) / (lines*(sizeof(int32_t)+sizeof(uint8_t)));
+	allowed_patterns *=.8;
 	DPRINT("Allowed patterns: %d, ", allowed_patterns);
 	//allowed_patterns = (free_mem + (lines*sizeof(uint32_t))) / (lines*(sizeof(uint32_t)*4) + sizeof(uint8_t)*1.5);
 	while (DIV_UP(allowed_patterns*sizeof(int32_t), gprop.textureAlignment) > allowed_patterns*sizeof(int32_t)) {
