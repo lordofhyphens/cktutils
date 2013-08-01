@@ -11,7 +11,10 @@ typedef struct GPU_NODE_type {
 	uint32_t offset;
 	int32_t scratch;
 } GPUNODE;
-
+typedef struct GPU_CKT_type {
+	GPUNODE* graph;
+	uint32_t* offset;
+} GPUCKT;
 // subclass of Circuit to provide GPU-friendly representation of the circuit.
 class GPU_Circuit : public Circuit { 
 	private: 
@@ -30,5 +33,12 @@ class GPU_Circuit : public Circuit {
 
 template <class T> bool Yes(const T& item) {
 	return true;
+}
+
+inline const GPUCKT toPod(const GPU_Circuit& ckt) {
+	GPUCKT tmp;
+	tmp.graph = ckt.gpu_graph();
+	tmp.offset = ckt.offset();
+	return tmp;
 }
 #endif //GPUCKT_H

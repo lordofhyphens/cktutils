@@ -16,10 +16,10 @@
 
 #define CHARPAIR (std::pair<uint8_t*,uint8_t*>())
 typedef std::vector<ARRAY2D<uint8_t> >::iterator dataiter;
-struct g_GPU_DATA { 
+typedef struct GPU_DATA_type { 
 	size_t pitch, width, height;
 	uint8_t* data;
-};
+} g_GPU_DATA;
 class GPU_Data : public CPU_Data {
 	private:
 		size_t _block_size;
@@ -29,6 +29,7 @@ class GPU_Data : public CPU_Data {
 	public: 
 		void unload();
 		inline g_GPU_DATA gpu_pack(int ref) { g_GPU_DATA z; ARRAY2D<uint8_t> t = gpu(ref); z.pitch = t.pitch; z.width = t.width; z.height = t.height; z.data = t.data; return z; }
+		inline g_GPU_DATA gpu_pack() { g_GPU_DATA z; ARRAY2D<uint8_t> t = gpu(); z.pitch = t.pitch; z.width = t.width; z.height = t.height; z.data = t.data; return z; }
 		ARRAY2D<uint8_t> gpu(uint32_t ref, bool coherent = false); // this will throw an out_of_range exception if ref > size; Also changes current.
 		ARRAY2D<uint8_t> gpu() { return gpu(this->_current);}
 		uint32_t refresh(); // ensures that the GPU memory space is equivalent to cpu-current.
@@ -41,6 +42,23 @@ class GPU_Data : public CPU_Data {
 		std::string debug();
 		ARRAY2D<uint8_t> ar2d() const { return *(this->_gpu); }
 };
+
+inline const g_GPU_DATA toPod(GPU_Data& data) {
+	g_GPU_DATA tmp;
+	tmp.data = data.gpu().data;
+	tmp.height = data.gpu().height;
+	tmp.pitch = data.gpu().pitch;
+	tmp.width = data.gpu().width;
+	return tmp;
+}
+inline const g_GPU_DATA toPod( GPU_Data& data, size_t chunk) {
+	g_GPU_DATA tmp;
+	tmp.data = data.gpu(chunk).data;
+	tmp.height = data.gpu(chunk).height;
+	tmp.pitch = data.gpu(chunk).pitch;
+	tmp.width = data.gpu(chunk).width;
+	return tmp;
+}
 
 void gpu_shift(GPU_Data& pack);
 void debugDataOutput(ARRAY2D<uint8_t> results, std::string outfile);
