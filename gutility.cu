@@ -72,5 +72,4 @@ std::string gpuMemCheck(){
 	temp << free_mem;
 	return temp.str();
 }
-
 void resetGPU() { cudaDeviceReset();}

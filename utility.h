@@ -19,7 +19,8 @@
 	void loadSubCkts(const Circuit& ckt,std::vector<SubCkt>& subckt, std::string filename);
 	inline bool deleteAll(int * theElement ) { if (theElement != NULL) delete [] theElement; return true; }
 	size_t gpuCheckMemory();
-void resetGPU();
+	void resetGPU();
+	
 #ifdef __CUDACC__
 #include <stdio.h>
 __device__ inline int find(int* ckt, int tgt) {

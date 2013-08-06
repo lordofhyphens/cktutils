@@ -59,7 +59,9 @@ uint32_t GPU_Data::initialize(size_t in_columns, size_t in_rows, uint32_t block_
 	this->_gpu = new ARRAY2D<uint8_t>(NULL, in_rows, block_width, sizeof(uint8_t)*block_width);
 	err = cudaMallocPitch(&(this->_gpu->data), &(this->_gpu->pitch), sizeof(uint8_t)*this->_gpu->width, in_rows);
 	if (err != cudaSuccess) { 
-		DPRINT("Failed to allocate memory.");
+		DPRINT("Failed to allocate memory.\n");
+		HANDLE_ERROR(err);
+		return err;
 	}
 	uint32_t rem_columns = in_columns;
 	for (uint32_t i = 0; i < chunks;i++) {
