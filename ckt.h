@@ -67,6 +67,7 @@ class Circuit {
 		std::string name;
 		void levelize();
 		void mark_lines();
+		double _avg_nfo;
 		unsigned int _levels;
 		void annotate(std::vector<NODEC>*);
 	public:
@@ -83,7 +84,11 @@ class Circuit {
 		void print() const;
 		inline NODEC& at(int node) const { return this->graph->at(node);}
 		inline NODEC& operator[](int node) const { return this->graph->at(node);}
+		// returns the number of levels in the circuit from PIs to POs. 
+		// Any two nodes in the same level are independent of each other.
 		inline size_t levels() const { return this->_levels;}
+		// returns the average fan-out of nodes in the ckt, a useful statistic to have.
+		inline double avg_nfo() const { return _avg_nfo;}
 		size_t max_level_pair();
 		size_t out_of_level_nodes(size_t, size_t);
 		size_t max_out_of_level_nodes();

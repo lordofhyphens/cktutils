@@ -32,6 +32,7 @@ void Circuit::save(const char* memfile) {
 void Circuit::load(const char* memfile) {
 	std::ifstream ifile(memfile);
 	int type;
+	int nfos = 0;
 	std::string strbuf;
 	std::string name;
 	while (!ifile.eof()) {
@@ -59,6 +60,7 @@ void Circuit::load(const char* memfile) {
 			node.fin.push_back(std::make_pair(temp.substr(0,p),id));
 		}
 		buf >> node.nfo;
+		nfos += node.nfo;
 		for (unsigned int i = 0; i < node.nfo; i++) {
 			std::string temp;
 			int id;
@@ -75,9 +77,11 @@ void Circuit::load(const char* memfile) {
 	for (std::vector<NODEC>::iterator a = this->graph->begin(); a < this->graph->end(); a++) {
 		this->_levels = std::max(this->_levels, a->level);
 	}
+	_avg_nfo = (double)nfos / size();
 }
 void Circuit::load(const char* memfile, const char * ext_id) {
 	std::ifstream ifile(memfile);
+	int nfos = 0;
 	int type;
 	std::string strbuf;
 	std::string name;
@@ -109,6 +113,7 @@ void Circuit::load(const char* memfile, const char * ext_id) {
 			node.fin.push_back(std::make_pair(tmp,0));
 		}
 		buf >> node.nfo;
+		nfos += node.nfo;
 		for (unsigned int i = 0; i < node.nfo; i++) {
 			std::string temp;
 			size_t p;
@@ -127,9 +132,12 @@ void Circuit::load(const char* memfile, const char * ext_id) {
 	for (std::vector<NODEC>::iterator a = this->graph->begin(); a < this->graph->end(); a++) {
 		this->_levels = std::max(this->_levels, a->level);
 	}
+	_avg_nfo = (double)nfos / size();
+
 }
 void Circuit::read_bench(const char* benchfile, const char* ext) {
 	std::ifstream tfile(benchfile);
+	int nfos = 0;
 	this->name = benchfile;
 	this->name.erase(std::remove_if(this->name.begin(), this->name.end(),isspace),this->name.end());
 	this->name.erase(__gnu_parallel::find(this->name.begin(),this->name.end(),'.'),this->name.end());
