@@ -37,7 +37,7 @@ template <class T> bool Yes(const T& item) {
 inline const GPUCKT toPod(const GPU_Circuit& ckt) {
 	GPUCKT tmp;
 	tmp.graph = ckt.gpu_graph();
-	tmp.offset = ckt.offset();
+	tmp.fanout = ckt.offset();
 	return tmp;
 }
 #endif //GPUCKT_H
