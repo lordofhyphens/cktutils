@@ -1,4 +1,4 @@
-objs=ckt.o cpudata.o iscas.o node.o sort.o subckt.o utility.o vectors.o mergestate.o
+objs=ckt.o cpudata.o iscas.o node.o sort.o subckt.o utility.o vectors.o mergestate.o lookup.o
 gobjs=gutility.o gpuckt.o gpudata.o g_subckt.o
 CXX=g++-4.7
 ifndef CUDA_DIR
@@ -15,7 +15,7 @@ endif
 .cc.o: $(objs:.o=.cc) $(objs:.o=.h)
 	$(CXX) -c $(CFLAGS) $(CPPFLAGS) -std=c++11 -march=native -fopenmp -o $@ $<
 .cu.o: 
-	$(GPCXX) -c $(NVCFLAGS) -o $@ $<
+	$(GPCXX) -c -dc $(NVCFLAGS) -o $@ $<
 
 all: $(objs) 
 gpu: $(gobjs)

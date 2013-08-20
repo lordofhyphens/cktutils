@@ -1,6 +1,6 @@
 #ifndef DEFINES_H
 #define DEFINES_H
-
+#define HASHLENGTH 6
 #define UNINITIALIZED -1
 #ifdef NDEBUG 
 	#define DPRINT(...) 
@@ -23,7 +23,7 @@
 #else
 	#define TPRINT(...) fprintf(stderr, __VA_ARGS__)
 #endif // TPRINT definition
-
+#define HASH_COUNT 10
 #define S0 0
 #define S1 1
 #define T0 2 // 1->0 transition, or "Transition to 0"

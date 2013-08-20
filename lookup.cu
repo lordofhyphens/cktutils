@@ -21,7 +21,6 @@ __device__ __host__ uint32_t hashlittle( const void *key, size_t length, uint32_
 	u.ptr = key;
 	if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0)) {
 		const uint32_t *k = (const uint32_t *)key;         /* read 32-bit chunks */
-		const uint8_t  *k8;
 
 		/*------ all but last block: aligned reads and affect 32 bits of (a,b,c) */
 		while (length > 12)
