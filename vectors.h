@@ -1,6 +1,7 @@
 #include "defines.h"
 #include "errors.h"
 #include "gpudata.h"
+#include "utility.cuh"
 #include <cassert>
 #include <string>
 #include <sstream>

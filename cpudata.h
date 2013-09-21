@@ -5,6 +5,7 @@
 #include "errors.h"
 #include "defines.h"
 #include "array2d.h"
+#include "utility.cuh"
 #include <iostream> // included for debugging
 #include <utility>
 #include <vector>

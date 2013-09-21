@@ -1,6 +1,5 @@
 template <int N> 
 union __keytype { uint32_t num[N]; uint8_t block[N*sizeof(uint32_t)]; } ;	
-typedef __keytype<2> key_2;
 
 template <int N>
 __device__ __host__ inline bool operator==(const __keytype<N>& lhs, const __keytype<N>&rhs) {
@@ -14,10 +13,9 @@ template <int N>
 __device__ __host__ inline bool operator!=(const __keytype<N>& lhs, const __keytype<N>&rhs) {
 	return !(lhs == rhs);
 }
-template <int N, class T>
-struct segment_t {
-	uint32_t lock;
+template <int N>
+struct segment {
 	__keytype<N> key;
-	T pattern;
+	int2 pattern;
 };
 

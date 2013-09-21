@@ -33,6 +33,7 @@ void Circuit::load(const char* memfile) {
 	std::ifstream ifile(memfile);
 	int type;
 	int nfos = 0;
+	unsigned int max_nfo = 0;
 	std::string strbuf;
 	std::string name;
 	while (!ifile.eof()) {
@@ -60,6 +61,7 @@ void Circuit::load(const char* memfile) {
 			node.fin.push_back(std::make_pair(temp.substr(0,p),id));
 		}
 		buf >> node.nfo;
+		max_nfo = (node.nfo > max_nfo ? node.nfo : max_nfo);
 		nfos += node.nfo;
 		for (unsigned int i = 0; i < node.nfo; i++) {
 			std::string temp;
@@ -78,10 +80,13 @@ void Circuit::load(const char* memfile) {
 		this->_levels = std::max(this->_levels, a->level);
 	}
 	_avg_nfo = (double)nfos / size();
+	_max_nfo = max_nfo;
+	std::cerr << nfos << "\n";
 }
 void Circuit::load(const char* memfile, const char * ext_id) {
 	std::ifstream ifile(memfile);
 	int nfos = 0;
+	unsigned int max_nfo = 0;
 	int type;
 	std::string strbuf;
 	std::string name;
@@ -113,6 +118,7 @@ void Circuit::load(const char* memfile, const char * ext_id) {
 			node.fin.push_back(std::make_pair(tmp,0));
 		}
 		buf >> node.nfo;
+		max_nfo = (node.nfo >= max_nfo ? node.nfo : max_nfo);
 		nfos += node.nfo;
 		for (unsigned int i = 0; i < node.nfo; i++) {
 			std::string temp;
@@ -133,6 +139,8 @@ void Circuit::load(const char* memfile, const char * ext_id) {
 		this->_levels = std::max(this->_levels, a->level);
 	}
 	_avg_nfo = (double)nfos / size();
+	std::cerr << nfos << "\n";
+	_max_nfo = max_nfo;
 
 }
 void Circuit::read_bench(const char* benchfile, const char* ext) {

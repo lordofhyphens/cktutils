@@ -44,8 +44,8 @@ int read_vectors(GPU_Data& pack,const char* fvec, int chunksize, int height) {
 		uint8_t* data = pack.cpu(chunk).data;
 		#pragma omp parallel for shared(data)
 		for (unsigned int j = 0; j < str1.size(); j++) { 
-			REF2D(uint8_t, data,pack.cpu(chunk).pitch,lines, j) = ((str1[j] == '0') ? 0 : 1);
-			//DPRINT("%2d ",REF2D(char, pack.cpu(chunk).data,pack.cpu().pitch,lines, j) );
+			REF2D( data,pack.cpu(chunk).pitch,lines, j) = ((str1[j] == '0') ? 0 : 1);
+			//DPRINT("%2d ",REF2D( pack.cpu(chunk).data,pack.cpu().pitch,lines, j) );
 		}
 		lines++;
 	//	if (lines > chunksize) {
@@ -75,8 +75,8 @@ int read_vectors(CPU_Data& pack,const char* fvec, int chunksize) {
 		// REF2D.
 //		std::cout << str1 << std::endl;
 		for (unsigned int j = 0; j < str1.size(); j++) { 
-			REF2D(uint8_t, pack.cpu(chunk).data,pack.cpu(chunk).pitch,lines, j) = ((str1[j] == '0') ? 0 : 1);
-//			DPRINT("%2d ",REF2D(char, pack.cpu(chunk).data,pack.cpu().pitch,lines, j) );
+			REF2D( pack.cpu(chunk).data,pack.cpu(chunk).pitch,lines, j) = ((str1[j] == '0') ? 0 : 1);
+//			DPRINT("%2d ",REF2D( pack.cpu(chunk).data,pack.cpu().pitch,lines, j) );
 		}
 		lines++;
 		if (lines > chunksize) {

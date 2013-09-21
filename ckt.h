@@ -68,6 +68,7 @@ class Circuit {
 		void levelize();
 		void mark_lines();
 		double _avg_nfo;
+		double _max_nfo;
 		unsigned int _levels;
 		void annotate(std::vector<NODEC>*);
 	public:
@@ -89,6 +90,8 @@ class Circuit {
 		inline size_t levels() const { return this->_levels;}
 		// returns the average fan-out of nodes in the ckt, a useful statistic to have.
 		inline double avg_nfo() const { return _avg_nfo;}
+		inline uint32_t max_nfo() const { return _max_nfo;}
+
 		size_t max_level_pair();
 		size_t out_of_level_nodes(size_t, size_t);
 		size_t max_out_of_level_nodes();

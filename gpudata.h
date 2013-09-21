@@ -16,10 +16,30 @@
 
 #define CHARPAIR (std::pair<uint8_t*,uint8_t*>())
 typedef std::vector<ARRAY2D<uint8_t> >::iterator dataiter;
-typedef struct GPU_DATA_type { 
+template <class T>
+struct GPU_DATA_type {
 	size_t pitch, width, height;
-	uint8_t* data;
-} g_GPU_DATA;
+	T* data;
+};
+typedef GPU_DATA_type<uint8_t> g_GPU_DATA;
+
+
+// Specialized REF2D
+#ifdef __CUDACC__
+template <class T> 
+__device__ __host__ inline T& REF2D(const GPU_DATA_type<T>& POD, int PID, int GID) { return ((T*)((char*)POD.data + GID*POD.pitch))[PID]; }
+
+#else
+template <class T> 
+inline T& REF2D(const GPU_DATA_type<T>& POD, int PID, int GID) { return (T*)((char*)(POD.data) + GID*POD.pitch)[PID]; }
+#endif
+
+union coalesce_t { 
+	uint8_t rows[4];
+	uint32_t packed;
+
+};
+
 class GPU_Data : public CPU_Data {
 	private:
 		size_t _block_size;
@@ -51,9 +71,20 @@ inline const g_GPU_DATA toPod(GPU_Data& data) {
 	tmp.width = data.gpu().width;
 	return tmp;
 }
-inline const g_GPU_DATA toPod( GPU_Data& data, size_t chunk) {
-	g_GPU_DATA tmp;
-	tmp.data = data.gpu(chunk).data;
+
+template <class T>
+inline const GPU_DATA_type<T> toPod(GPU_Data& data) {
+	GPU_DATA_type<T> tmp;
+	tmp.data = (T*)data.gpu().data;
+	tmp.height = data.gpu().height;
+	tmp.pitch = data.gpu().pitch;
+	tmp.width = data.gpu().width;
+	return tmp;
+}
+template <class T>
+inline const GPU_DATA_type<T> toPod(GPU_Data& data, size_t chunk) {
+	GPU_DATA_type<T> tmp;
+	tmp.data = (T*)data.gpu(chunk).data;
 	tmp.height = data.gpu(chunk).height;
 	tmp.pitch = data.gpu(chunk).pitch;
 	tmp.width = data.gpu(chunk).width;

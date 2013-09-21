@@ -153,7 +153,7 @@ void debugDataOutput(GPU_Data& results, std::string outfile = "simdata.log") {
 	assert (err == cudaSuccess);
 	for (uint32_t r = 0;r < results.width(); r++) {
 		for (uint32_t i = 0; i < results.height(); i++) {
-			uint8_t z = REF2D(uint8_t, lvalues, results.gpu().pitch, r, i);
+			uint8_t z = REF2D( lvalues, results.gpu().pitch, r, i);
 			ofile << (uint32_t)z;
 		}
 		ofile << std::endl;
@@ -173,7 +173,7 @@ void debugDataOutput(ARRAY2D<uint8_t> results, std::string outfile = "simdata.lo
 	assert (err == cudaSuccess);
 	for (uint32_t r = 0;r < results.width; r++) {
 		for (uint32_t i = 0; i < results.height; i++) {
-			uint8_t z = REF2D(uint8_t, lvalues, results.pitch, r, i);
+			uint8_t z = REF2D( lvalues, results.pitch, r, i);
 			ofile << (uint32_t)z;
 		}
 		ofile << std::endl;

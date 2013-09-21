@@ -1,4 +1,5 @@
 #include "cpudata.h"
+#include "utility.cuh"
 /*
 static void delete_data(const ARRAY2D<char>& item) {
 	delete item.data;
@@ -33,7 +34,7 @@ std::string CPU_Data::print() const {
 	std::stringstream st; 
 	for (unsigned int r = 0;r < this->cpu().width; r++) {
 		for (unsigned int i = 0; i < this->cpu().height; i++) {
-			uint8_t z = REF2D(uint8_t, this->cpu().data, this->cpu().pitch, r, i);
+			uint8_t z = REF2D(this->cpu().data, this->cpu().pitch, r, i);
 			st << (int)z;
 		}
 		st << std::endl;

@@ -1,6 +1,6 @@
 #if defined(__CUDACC__)
 #include "lookup.h"
-#include "segment.h"
+#include "segment.cuh"
 // Prototype code to test effects of multiple hash functions on our expected key sets.
 
 // Starting at src, get a segment of up to length l by following 
@@ -8,28 +8,6 @@
 // a L-tuple. The tuple length is defined at compile-time.
 
  __host__ __device__ uint32_t hashlittle( const void *key, size_t length, uint32_t initval);
-template <int N> 
-union __keytype { uint32_t num[N]; uint8_t block[N*sizeof(uint32_t)]; } ;	
-typedef __keytype<2> key_2;
-
-template <int N>
-__device__ __host__ inline bool operator==(const __keytype<N>& lhs, const __keytype<N>&rhs) {
-	bool tmp = true;
-	#pragma unroll 2
-	for (int i = 0; i < N; i++)
-		tmp = tmp && (lhs.num[i] == rhs.num[i]);
-	return tmp;
-}
-template <int N>
-__device__ __host__ inline bool operator!=(const __keytype<N>& lhs, const __keytype<N>&rhs) {
-	return !(lhs == rhs);
-}
-template <int N, class T>
-struct segment_t {
-	uint32_t lock;
-	__keytype<N> key;
-	T pattern;
-};
 
 // Utility function and structure to pack data about out hash functions. 
 typedef struct hashfuncs_t { uint32_t *hashlist, max, slots; } hashfuncs;
