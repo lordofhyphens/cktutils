@@ -38,8 +38,6 @@ union coalesce_t {
 	HOST_DEVICE coalesce_t( uint8_t p0, uint8_t p1, uint8_t p2, uint8_t p3 ) { rows[0] = p0; rows[1] = p1; rows[2] = p2; rows[3] = p3;} 
 };
 
-//HOST_DEVICE coalesce_t& operator&=(coalesce_t& a, uint32_t b) { a.rows[0] &= b; a.rows[1]&=b;a.rows[2]&=b;a.rows[3]&=b; return a;}
-//HOST_DEVICE coalesce_t operator&(coalesce_t a, uint32_t b) { a.rows[0] &= b; a.rows[1]&=b;a.rows[2]&=b;a.rows[3]&=b; return a;}
 HOST_DEVICE coalesce_t vectAND(coalesce_t a, uint32_t b); 
 // Specialized REF2D
 #ifdef __CUDACC__
