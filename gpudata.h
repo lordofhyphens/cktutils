@@ -13,6 +13,11 @@
 #include "array2d.h"
 #include "cpudata.h"
 
+#ifdef __CUDACC__ 
+	#define HOST_DEVICE __device__ __host__
+#else 
+	#define HOST_DEVICE
+#endif 
 
 #define CHARPAIR (std::pair<uint8_t*,uint8_t*>())
 typedef std::vector<ARRAY2D<uint8_t> >::iterator dataiter;
@@ -23,22 +28,31 @@ struct GPU_DATA_type {
 };
 typedef GPU_DATA_type<uint8_t> g_GPU_DATA;
 
+union coalesce_t { 
+	uint32_t packed;
+	uint8_t rows[4];
+	HOST_DEVICE operator uint32_t() { return packed; }
+	HOST_DEVICE coalesce_t() : packed((unsigned)0) {} 
+	HOST_DEVICE coalesce_t(const coalesce_t& other) : packed(other.packed) {}
+	HOST_DEVICE coalesce_t(uint32_t a) : packed(a) {} 
+	HOST_DEVICE coalesce_t( uint8_t p0, uint8_t p1, uint8_t p2, uint8_t p3 ) { rows[0] = p0; rows[1] = p1; rows[2] = p2; rows[3] = p3;} 
+};
 
+//HOST_DEVICE coalesce_t& operator&=(coalesce_t& a, uint32_t b) { a.rows[0] &= b; a.rows[1]&=b;a.rows[2]&=b;a.rows[3]&=b; return a;}
+//HOST_DEVICE coalesce_t operator&(coalesce_t a, uint32_t b) { a.rows[0] &= b; a.rows[1]&=b;a.rows[2]&=b;a.rows[3]&=b; return a;}
+HOST_DEVICE coalesce_t vectAND(coalesce_t a, uint32_t b); 
 // Specialized REF2D
 #ifdef __CUDACC__
 template <class T> 
-__device__ __host__ inline T& REF2D(const GPU_DATA_type<T>& POD, int PID, int GID) { return ((T*)((char*)POD.data + GID*POD.pitch))[PID]; }
+HOST_DEVICE inline T& REF2D(const GPU_DATA_type<T>& POD, int PID, int GID) { return ((T*)((char*)POD.data + GID*POD.pitch))[PID]; }
+
+HOST_DEVICE inline coalesce_t& REF2D(const GPU_DATA_type<coalesce_t>& POD, int PID, int GID) { assert(GID >= 0); assert(PID >= 0); return *((coalesce_t*)((char*)POD.data + GID*POD.pitch)+PID); }
 
 #else
 template <class T> 
 inline T& REF2D(const GPU_DATA_type<T>& POD, int PID, int GID) { return (T*)((char*)(POD.data) + GID*POD.pitch)[PID]; }
 #endif
 
-union coalesce_t { 
-	uint8_t rows[4];
-	uint32_t packed;
-
-};
 
 class GPU_Data : public CPU_Data {
 	private:

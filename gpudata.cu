@@ -182,3 +182,4 @@ void debugDataOutput(ARRAY2D<uint8_t> results, std::string outfile = "simdata.lo
 	ofile.close();
 #endif
 }
+HOST_DEVICE coalesce_t vectAND(coalesce_t a, uint32_t b) { a.rows[0] &= b; a.rows[1]&=b;a.rows[2]&=b;a.rows[3]&=b; return a;}

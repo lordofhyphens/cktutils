@@ -67,7 +67,6 @@
 #define THREAD_SHIFT 1024
 
 #define MAX_BLOCKS 65535
-#define WARP_SIZE 32
 #define DEVICE __device__ __forceinline__
 #define OUTJUST 3
 #endif // include guard.

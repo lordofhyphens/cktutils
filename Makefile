@@ -8,7 +8,7 @@ ifndef GPCXX
 	GPCXX=${CUDA_DIR}/bin/nvcc
 endif
 ifndef NVCFLAGS 
-	NVCFLAGS=-arch=sm_20 -I${CUDA_DIR}/include -ccbin g++-4.4
+	NVCFLAGS=-arch=sm_20 -I${CUDA_DIR}/include -ccbin g++-4.6
 endif
 .SUFFIXES:
 .SUFFIXES: .o .cu .cc
