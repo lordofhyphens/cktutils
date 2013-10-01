@@ -78,6 +78,8 @@ void generateSegmentList(segment<N,T>** seglist, const Circuit& ckt) {
 			}
 	}
 	segment<N, T> tmp;
+	tmp.pattern.x = -1;
+	tmp.pattern.y = -1;
 	#pragma unroll
 	for (int i = 0; i < N; i++) {
 		tmp.key.num[i] = ckt.size();
