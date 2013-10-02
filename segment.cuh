@@ -6,9 +6,10 @@
 	#define __host__ 
 	#define __device__ 
 #endif
+#include "defines.h"
 
 template <int N> 
-union __keytype { uint32_t num[N]; uint8_t block[N*sizeof(uint32_t)]; } ;	
+union __keytype { int32_t num[N]; uint8_t block[N*sizeof(uint32_t)]; } ;	
 
 #ifdef __CUDACC__
 	typedef int2 h_int2;
@@ -55,10 +56,14 @@ inline void descendSegment(const Circuit& ckt, const NODEC& g, const int& level,
 	} else if (g.po != true) {
 		// recurse to next level
 		for (unsigned int i = 0; i < g.nfo; i++) {
-			v.key.num[level] = g.fot.at(i).second;
-			std::cerr << "Descending to level " << level+1 << " gate " << g.fot.at(i).second << "\n";
+			v.key.num[level+1] = g.fot.at(i).second;
+//			std::cerr << "Descending to level " << level+1 << " gate " << g.fot.at(i).second << "\n";
 			descendSegment(ckt, ckt.at(g.fot.at(i).second), level+1, g.fot.at(i).second, v, segs);
 		}
+	} else if (ckt.at(v.key.num[0]).typ == INPT) { 
+		#pragma unroll
+		for (unsigned int j = level+1; j < N; j++) { v.key.num[j] = -1; }
+		segs.push_back(v);
 	}
 }
 
@@ -71,11 +76,14 @@ void generateSegmentList(segment<N,T>** seglist, const Circuit& ckt) {
 		const NODEC& gate = ckt.at(gid);
 		segment<N, T> tmp;
 		tmp.key.num[0] = gid;
-		if (N > 1) 
+		if (N > 1) {
 			for (unsigned int j = 0; j < gate.fot.size(); j++) {
 				tmp.key.num[1] = gate.fot.at(j).second;
 				descendSegment(ckt, ckt.at(gate.fot.at(j).second), 1, gate.fot.at(j).second, tmp, segs);
 			}
+		} else {
+			segs.push_back(tmp);
+		}
 	}
 	segment<N, T> tmp;
 	tmp.pattern.x = -1;

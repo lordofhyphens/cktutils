@@ -60,13 +60,11 @@
 #define STABLE(P, N) (3*(!P & N) + 2*(P & !N) + (P & N))
 #define BIN(V) ( (V==T1 || V==S1) )
 //thread-per-block sizes, per kernel.
-#define SIM_BLOCK 768
-#define MARK_BLOCK 512
-#define MERGE_SIZE 512
-#define COVER_BLOCK 256
 #define THREAD_SHIFT 1024
 
-#define MAX_BLOCKS 65535
+const unsigned int MAX_BLOCKS = 65535;
+const unsigned int SEGMENT_LENGTH = 6;
 #define DEVICE __device__ __forceinline__
 #define OUTJUST 3
+
 #endif // include guard.
