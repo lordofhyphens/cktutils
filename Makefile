@@ -1,6 +1,7 @@
-objs=ckt.o cpudata.o iscas.o node.o sort.o subckt.o utility.o vectors.o mergestate.o lookup.o
+objs=ckt.o cpudata.o iscas.o node.o sort.o subckt.o utility.o vectors.o mergestate.o lookup.o gzstream.o
 gobjs=gutility.o gpuckt.o gpudata.o g_subckt.o
 CXX=g++-4.7
+CC=gcc-4.7
 ifndef CUDA_DIR
 	CUDA_DIR=/opt/net/apps/cuda-5.0
 endif
@@ -14,6 +15,7 @@ endif
 .SUFFIXES: .o .cu .cc
 .cc.o: $(objs:.o=.cc) $(objs:.o=.h)
 	$(CXX) -c $(CFLAGS) $(CPPFLAGS) -std=c++11 -march=native -fopenmp -o $@ $<
+
 .cu.o: 
 	$(GPCXX) -c -dc $(NVCFLAGS) -o $@ $<
 
