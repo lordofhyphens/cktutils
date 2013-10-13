@@ -68,7 +68,7 @@ struct dc_segment {
 };
 
 template <int N, class T>
-struct __align__(8) segment {
+struct segment {
 	__keytype<N> key;
 	T pattern;
 	HOST_DEVICE segment(const segment<N,T>& s) { key = s.key; pattern = s.pattern; };
