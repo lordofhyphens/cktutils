@@ -13,11 +13,7 @@
 #include "array2d.h"
 #include "cpudata.h"
 
-#ifdef __CUDACC__ 
-	#define HOST_DEVICE __device__ __host__
-#else 
-	#define HOST_DEVICE
-#endif 
+
 
 #define CHARPAIR (std::pair<uint8_t*,uint8_t*>())
 typedef std::vector<ARRAY2D<uint8_t> >::iterator dataiter;
@@ -41,14 +37,12 @@ union coalesce_t {
 HOST_DEVICE coalesce_t vectAND(coalesce_t a, uint32_t b); 
 // Specialized REF2D
 #ifdef __CUDACC__
-template <class T> 
-HOST_DEVICE inline T& REF2D(const GPU_DATA_type<T>& POD, int PID, int GID) { return ((T*)((char*)POD.data + GID*POD.pitch))[PID]; }
-
-HOST_DEVICE inline coalesce_t& REF2D(const GPU_DATA_type<coalesce_t>& POD, int PID, int GID) { assert(GID >= 0); assert(PID >= 0); return *((coalesce_t*)((char*)POD.data + GID*POD.pitch)+PID); }
+template <class T> HOST_DEVICE T& REF2D(const GPU_DATA_type<T> POD, const int PID, const int GID) { return ((T*)((char*)POD.data + GID*POD.pitch))[PID]; }
+HOST_DEVICE coalesce_t& REF2D(const GPU_DATA_type<coalesce_t> POD, const int PID, const int GID) { return *((coalesce_t*)((char*)POD.data + GID*POD.pitch)+PID); }
 
 #else
 template <class T> 
-inline T& REF2D(const GPU_DATA_type<T>& POD, int PID, int GID) { return (T*)((char*)(POD.data) + GID*POD.pitch)[PID]; }
+inline T& REF2D(const GPU_DATA_type<T>& POD, const int PID,const int GID) { return (T*)((char*)(POD.data) + GID*POD.pitch)[PID]; }
 #endif
 
 

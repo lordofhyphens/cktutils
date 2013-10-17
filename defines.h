@@ -64,7 +64,13 @@
 
 const unsigned int MAX_BLOCKS = 65535;
 const unsigned int SEGMENT_LENGTH = 6;
-#define DEVICE __device__ __forceinline__
 #define OUTJUST 3
+
+#ifdef __CUDACC__ 
+	#define HOST_DEVICE __device__ __host__ __forceinline__
+	#define DEVICE __device__ __forceinline__
+#else 
+	#define HOST_DEVICE inline
+#endif 
 
 #endif // include guard.
