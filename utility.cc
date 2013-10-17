@@ -26,6 +26,14 @@ void loadSubCkts(const Circuit& ckt, std::vector<SubCkt>& subckt, const std::str
 	}
 
 }
+// load a copy of the parent.
+void loadSubCkts(const Circuit& ckt, std::vector<SubCkt>& subckt) {
+	SubCkt* tmp;
+	tmp = new SubCkt(ckt);
+	tmp->load();
+	subckt.push_back(*tmp);
+	delete tmp;
+}
 
 float floattime(timespec time) {
 	float temp =0.0; 

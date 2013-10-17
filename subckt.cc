@@ -38,7 +38,16 @@ std::string SubCkt::save() const {
 	}
 	return ofile.str();
 }
-
+// Make this subckt a copy of its parent.
+void SubCkt::load() {
+	for (int i = 0; i < _ckt.size(); i++)
+		add(i);
+	__gnu_parallel::sort(_subckt->begin(), _subckt->end());
+	std::vector<int>::iterator it = unique(_subckt->begin(), _subckt->end());
+	_subckt->resize(it - _subckt->begin());
+	levelize();
+	_ref_node = _subckt->at(0);
+}
 void SubCkt::load(const std::string& memfile) {
 	//std::cerr << "Subckt: "<< memfile << std::endl;
 	std::string data = memfile.substr(memfile.find_first_of(':') + 1);

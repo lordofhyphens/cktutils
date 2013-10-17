@@ -30,6 +30,7 @@ class SubCkt {
 		~SubCkt();
 		std::string save() const;
 		void load(const std::string& memfile);
+		void load();
 		SubCkt(const Circuit& ckt);
 		SubCkt(const SubCkt&);
 		SubCkt(const Circuit& ckt, unsigned int node);
