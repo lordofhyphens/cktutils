@@ -17,6 +17,8 @@
 	GPU_SCKT_BATCH gpuLoadSubCkts(std::vector<SubCkt>::iterator start, std::vector<SubCkt>::iterator end);
 	void gpuCleanup(void*);
 	void loadSubCkts(const Circuit& ckt,std::vector<SubCkt>& subckt, std::string filename);
+
+	void loadSubCkts(const Circuit& ckt, std::vector<SubCkt>& subckt);
 	inline bool deleteAll(int * theElement ) { if (theElement != NULL) delete [] theElement; return true; }
 	size_t gpuCheckMemory();
 	void resetGPU();

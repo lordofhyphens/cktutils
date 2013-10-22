@@ -41,7 +41,7 @@ std::string SubCkt::save() const {
 // Make this subckt a copy of its parent.
 void SubCkt::load() {
 	for (int i = 0; i < _ckt.size(); i++)
-		add(i);
+		add(i);// query a m for tgt. If not present, return false.return _set->count(tgt);;
 	__gnu_parallel::sort(_subckt->begin(), _subckt->end());
 	std::vector<int>::iterator it = unique(_subckt->begin(), _subckt->end());
 	_subckt->resize(it - _subckt->begin());
@@ -66,10 +66,13 @@ void SubCkt::load(const std::string& memfile) {
 SubCkt::~SubCkt() {
 	delete _levels;
 	delete _subckt;
+	_set.clear();
 }
 #endif
 void SubCkt::add(const Circuit& ckt, const int& n) {
 	_subckt->push_back(n);
+	_set.insert(std::pair<int,int>(n, n));
+
 }
 void SubCkt::levelize() {
 	delete _levels;
@@ -126,7 +129,7 @@ const SubCkt SubCkt::operator/(const SubCkt& b) const {
 	}
 	return sc;
 }
-int SubCkt::in(unsigned int tgt) const {
+int SubCkt::where(unsigned int tgt) const {
 	std::vector<int>::iterator is = __gnu_parallel::find(_subckt->begin(), _subckt->end(), tgt);
 	if (is == _subckt->end()) {
 		return -1;
@@ -134,11 +137,17 @@ int SubCkt::in(unsigned int tgt) const {
 		return std::distance(_subckt->begin(), is);
 	}
 }
+bool SubCkt::in(unsigned int tgt) const {
+	// query a map for tgt. If not present, return false.
+	return _set.count(tgt) > 0;
+}
 SubCkt::SubCkt(const SubCkt& other) : _ckt(other._ckt){
+	_flat = NULL;
 	_levels = new std::vector<int>();
 	_subckt = new std::vector<int>();
 	_gpu = NULL;
 	this->_ref_node = other._ref_node;
+	this->_set = other._set;
 	this->_subckt->assign(other._subckt->begin(), other._subckt->end());
 	this->_levels->assign(other._levels->begin(), other._levels->end());
 }
