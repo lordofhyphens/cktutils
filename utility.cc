@@ -40,6 +40,12 @@ float floattime(timespec time) {
 	temp = (time.tv_sec * pow(10,3)) + (time.tv_nsec / pow(10,6));
 	return temp;
 }
+
+float elapsed(const timespec start) {
+	timespec stop;
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
+	return floattime(diff(start, stop));
+}
 int largest_size(std::vector<SubCkt>::iterator& start, std::vector<SubCkt>::iterator& end, int level) {
 	int res = 0; 
 	for (int i = 0; (start+i) < end; i++) { if (res < (start+i)->levelsize(i)) { res = (start+i)->levelsize(i); } }

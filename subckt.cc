@@ -40,7 +40,7 @@ std::string SubCkt::save() const {
 }
 // Make this subckt a copy of its parent.
 void SubCkt::load() {
-	for (int i = 0; i < _ckt.size(); i++)
+	for (unsigned int i = 0; i < _ckt.size(); i++)
 		add(i);// query a m for tgt. If not present, return false.return _set->count(tgt);;
 	__gnu_parallel::sort(_subckt->begin(), _subckt->end());
 	std::vector<int>::iterator it = unique(_subckt->begin(), _subckt->end());
