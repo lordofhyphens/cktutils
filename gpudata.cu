@@ -110,6 +110,13 @@ uint32_t GPU_Data::copy(uint32_t ref, bool coherent) {
 		return ERR_NONE;
 	return error;
 }
+// copy the GPU memory space back to the CPU.
+void GPU_Data::unload() {
+	ARRAY2D<uint8_t>* cpu = &(this->_data->at(this->_current));
+	ARRAY2D<uint8_t>* gpu = this->_gpu;
+	if (gpu != NULL)
+		cudaMemcpy2D(cpu->data, cpu->pitch, gpu->data, gpu->pitch, cpu->width * sizeof(uint8_t), cpu->height, cudaMemcpyDeviceToHost);
+}
 uint32_t GPU_Data::refresh() {
 	uint32_t error;
 	if (this->_gpu->data == NULL) { // Re-allocate GPU memory.
@@ -124,7 +131,7 @@ uint32_t GPU_Data::refresh() {
 		return ERR_NONE;
 	return error;
 }
-void GPU_Data::unload() {
+void GPU_Data::clear() {
 	if (this->_gpu->data != NULL) { cudaFree(this->_gpu->data); }
 	this->_gpu->data = NULL;
 } // deletes copy of data on GPU

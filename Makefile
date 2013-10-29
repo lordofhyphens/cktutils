@@ -1,5 +1,5 @@
-objs=ckt.o cpudata.o iscas.o node.o sort.o subckt.o utility.o vectors.o mergestate.o lookup.o gzstream.o
-gobjs=gutility.o gpuckt.o gpudata.o g_subckt.o
+objs=ckt.o cpudata.o iscas.o node.o sort.o subckt.o utility.o vectors.o mergestate.o gzstream.o
+gobjs=gutility.o gpuckt.o gpudata.o g_subckt.o lookup.o 
 CXX=g++-4.7
 CC=gcc-4.7
 ifndef CUDA_DIR

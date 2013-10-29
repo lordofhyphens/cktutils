@@ -1,6 +1,8 @@
 #ifndef SUBCKT_H
 #define SUBCKT_H
 #include <vector>
+#include <map>
+#include <utility>
 #include <algorithm>
 #include <string>
 #include <iterator>
@@ -22,6 +24,7 @@ class SubCkt {
 		int *_gpu;
 		std::vector<int>* _levels;
 		std::vector<int>* _subckt;
+		std::map<int,int> _set;
 		void levelize();
 
 		void grow_recurse_back(unsigned int node);
@@ -30,6 +33,7 @@ class SubCkt {
 		~SubCkt();
 		std::string save() const;
 		void load(const std::string& memfile);
+		void load();
 		SubCkt(const Circuit& ckt);
 		SubCkt(const SubCkt&);
 		SubCkt(const Circuit& ckt, unsigned int node);
@@ -37,7 +41,8 @@ class SubCkt {
 		void add(const Circuit&, const int&);
 		void copy(); // Flattens and copies the subckt to GPU memory.
 		void clear(); // Deallocate the copy of the subckt in GPU memory.
-		int in(unsigned int) const;
+		bool in(unsigned int) const;
+		int where(unsigned int) const;
 		inline int levels() const { return _levels->size() - 1; }
 		inline int levelsize(const unsigned int n) const { return ( n < _levels->size() ? _levels->at(n) : 0); }
 		// translates subckt position to ckt position

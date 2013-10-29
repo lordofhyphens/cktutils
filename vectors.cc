@@ -108,9 +108,17 @@ int read_vectors(CPU_Data& pack,const char* fvec, int chunksize) {
 
 int read_vectors(std::vector<std::vector<bool> >& vec, const char* fvec) {
 	std::string str1;
-	std::ifstream tfile(fvec);
+	std::istream* tfile;
+	if (strstr(fvec,".gz") == NULL) {
+		tfile = new std::ifstream(fvec);
+	} else {
+		tfile = new igzstream(fvec);
+	}
+	if (!*tfile) { 
+		DPRINT("%s, %d: Failed to open file %s.\n", __FILE__, __LINE__, fvec);
+	}
 	int lines = 0;
-	while(getline(tfile,str1)) {
+	while(getline(*tfile,str1)) {
 		if (str1.find("#") != std::string::npos) 
 			continue; // ignore comment lines
 		std::vector<bool> z(str1.size(),0);
@@ -123,6 +131,6 @@ int read_vectors(std::vector<std::vector<bool> >& vec, const char* fvec) {
 		vec.push_back(z);
 	}
 	std::cerr << " All vectors have been read." << std::endl;
-	tfile.close();
+	delete tfile;
 	return ERR_NONE;
 }

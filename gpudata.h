@@ -53,11 +53,13 @@ class GPU_Data : public CPU_Data {
 		uint32_t copy(uint32_t, bool coherent = false); // copy CPU to GPU. If coherent=true, performs a GPU<->CPU swap
 		size_t rows, columns, bl_width;
 	public: 
+		void clear();
 		void unload();
 		inline g_GPU_DATA gpu_pack(int ref) { g_GPU_DATA z; ARRAY2D<uint8_t> t = gpu(ref); z.pitch = t.pitch; z.width = t.width; z.height = t.height; z.data = t.data; return z; }
 		inline g_GPU_DATA gpu_pack() { g_GPU_DATA z; ARRAY2D<uint8_t> t = gpu(); z.pitch = t.pitch; z.width = t.width; z.height = t.height; z.data = t.data; return z; }
 		ARRAY2D<uint8_t> gpu(uint32_t ref, bool coherent = false); // this will throw an out_of_range exception if ref > size; Also changes current.
 		ARRAY2D<uint8_t> gpu() { return gpu(this->_current);}
+		ARRAY2D<uint8_t> gpu() const { return *_gpu;} // special function for read-only version
 		uint32_t refresh(); // ensures that the GPU memory space is equivalent to cpu-current.
 		size_t block_width() { return this->_block_size;}
 		uint32_t initialize(size_t, size_t, uint32_t);
