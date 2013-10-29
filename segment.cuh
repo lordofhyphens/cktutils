@@ -85,23 +85,15 @@ HOST_DEVICE bool operator<(const segment<N,T>& lhs, const segment<N,T>&rhs) {
 }
 
 template<int N, class T>
-inline void descendSegment(const Circuit& ckt, const NODEC& g, const int& level, const int& fin, segment<N,T> v, std::vector<segment<N,T> >* segs) {
+inline void descendSegment(const Circuit& ckt, const NODEC& g, const int& level, segment<N,T> v, std::vector<segment<N,T> >* segs) {
 	// every call represents another level
 	if (level == N-1) {
-	//	std::cout << "Adding (level " << N << "): sid " << segs->size() << " (";
-	//	for (int j = 0; j < N; j++) {
-		//	std::cout << v.key.num[j] << ": " << ckt.at(v.key.num[j]).name;
-//			if (j != N-1) 
-	//			std::cout << ",";
-//		}
-//		std::cout << ")\n";
 		segs->push_back(v);
 	} else if (g.po != true) {
 		// recurse to next level
 		for (unsigned int i = 0; i < g.nfo; i++) {
 			v.key.num[level+1] = g.fot.at(i).second;
-//			std::cerr << "Descending to level " << level+1 << " gate " << g.fot.at(i).second << "\n";
-			descendSegment(ckt, ckt.at(g.fot.at(i).second), level+1, g.fot.at(i).second, v, segs);
+			descendSegment(ckt, ckt.at(g.fot.at(i).second), level+1, v, segs);
 		}
 	} else if (ckt.at(v.key.num[0]).typ == INPT) { 
 		for (unsigned int j = level+1; j < N; j++) { v.key.num[j] = -1; }
@@ -121,7 +113,7 @@ void generateSegmentList(segment<N,T>** seglist, const Circuit& ckt) {
 		if (N > 1) {
 			for (unsigned int j = 0; j < gate.fot.size(); j++) {
 				tmp.key.num[1] = gate.fot.at(j).second;
-				descendSegment(ckt, ckt.at(gate.fot.at(j).second), 1, gate.fot.at(j).second, tmp, &segs);
+				descendSegment(ckt, ckt.at(gate.fot.at(j).second), 1, tmp, &segs);
 			}
 		} else {
 			segs.push_back(tmp);

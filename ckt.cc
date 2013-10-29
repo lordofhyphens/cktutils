@@ -145,7 +145,6 @@ void Circuit::load(const char* memfile, const char * ext_id) {
 }
 void Circuit::read_bench(const char* benchfile, const char* ext) {
 	std::ifstream tfile(benchfile);
-	int nfos = 0;
 	this->name = benchfile;
 	this->name.erase(std::remove_if(this->name.begin(), this->name.end(),isspace),this->name.end());
 	this->name.erase(__gnu_parallel::find(this->name.begin(),this->name.end(),'.'),this->name.end());

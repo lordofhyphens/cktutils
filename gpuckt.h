@@ -22,11 +22,11 @@ class GPU_Circuit : public Circuit {
 	public:
 		uint32_t* offset() const { return this->_offset;}
 		uint32_t max_offset() const;
-		GPUNODE* gpu_graph() const;
+		GPUNODE* gpu() const;
 		void copy();
 		~GPU_Circuit();
 		GPU_Circuit();
-		GPUCKT POD() const { GPUCKT pod; pod.graph = gpu_graph(); pod.offset = offset(); return pod; }
+		GPUCKT POD() const { GPUCKT pod; pod.graph = gpu(); pod.offset = offset(); return pod; }
 		
 };
 
@@ -36,7 +36,7 @@ template <class T> bool Yes(const T& item) {
 
 inline const GPUCKT toPod(const GPU_Circuit& ckt) {
 	GPUCKT tmp;
-	tmp.graph = ckt.gpu_graph();
+	tmp.graph = ckt.gpu();
 	tmp.offset = ckt.offset();
 	tmp.size = ckt.size();
 	return tmp;

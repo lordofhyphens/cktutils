@@ -68,7 +68,7 @@ int read_vectors(GPU_Data& pack,const char* fvec, int chunksize, int height) {
 	//		chunk++;
 	//	}
 	}
-	assert(lines == pack.width());
+	assert((unsigned)lines == pack.width());
 	std::cerr << " All vectors have been read." << std::endl;
 	delete tfile;
 	pack.unload();

@@ -4,7 +4,7 @@
 uint32_t GPU_Circuit::max_offset() const {
 	return this->_max_offset;
 }
-GPUNODE* GPU_Circuit::gpu_graph() const {
+GPUNODE* GPU_Circuit::gpu() const {
 	return this->_gpu_graph;
 }
 GPU_Circuit::GPU_Circuit() {
