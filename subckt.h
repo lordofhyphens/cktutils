@@ -68,6 +68,7 @@ class SubCkt {
 		std::vector<int>& subckt() const { return *_subckt; }
 		const SubCkt operator/(const SubCkt& b) const; // intersection
 		SubCkt& operator=(const SubCkt&);
+		int root() { return _ref_node;}
 		void grow(unsigned int node);
 };
 struct GPU_SCKT_BATCH {

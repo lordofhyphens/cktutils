@@ -3,6 +3,7 @@
 #include "defines.h"
 #include <cuda.h>
 #include <stdint.h>
+extern int verbose_flag;
 ARRAY2D<int32_t> gpuAllocateBlockResults(size_t height) {
 	int32_t* tgt = NULL;
 	cudaMalloc(&tgt, sizeof(int)*(height));

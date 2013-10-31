@@ -85,6 +85,31 @@ HOST_DEVICE bool operator<(const segment<N,T>& lhs, const segment<N,T>&rhs) {
 }
 
 template<int N, class T>
+inline void descendSegment(const Circuit& ckt, const SubCkt& sckt, const NODEC& g, const int& level, const int& fin, segment<N,T> v, std::vector<segment<N,T> >* segs) {
+	// every call represents another level
+	if (level == N-1) {
+//		std::cout << "Adding (level " << N << "): sid " << segs->size() << " (";
+//		for (int j = 0; j < N; j++) {
+//			std::cout << v.key.num[j] << ": " << ckt.at(v.key.num[j]).name;
+//			if (j != N-1) 
+//			std::cout << ",";
+//		}
+//		std::cout << ")\n";
+		segs->push_back(v);
+	} else if (g.po != true) {
+		// recurse to next level
+		for (unsigned int i = 0; i < g.nfo; i++) {
+			if (sckt.in(g.fot.at(i).second) < 0) continue;
+			v.key.num[level+1] = sckt.reverse_ref(g.fot.at(i).second);
+			std::cerr << "Descending to level " << level+1 << " gate " << g.fot.at(i).second << "\n";
+			descendSegment(ckt, sckt, ckt.at(g.fot.at(i).second), level+1, g.fot.at(i).second, v, segs);
+		}
+	} else if (ckt.at(v.key.num[0]).typ == INPT) { 
+		for (unsigned int j = level+1; j < N; j++) { v.key.num[j] = -1; }
+		segs->push_back(v);
+	}
+}
+template<int N, class T>
 inline void descendSegment(const Circuit& ckt, const NODEC& g, const int& level, const int& fin, segment<N,T> v, std::vector<segment<N,T> >* segs) {
 	// every call represents another level
 	if (level == N-1) {
@@ -145,6 +170,42 @@ void generateSegmentList(segment<N,T>** seglist, const Circuit& ckt) {
 	}
 }
 
+// Extra rule for segment, has to be in the same segment in order to get added.
+template <int N, class T>
+void generateSegmentList(segment<N,T>** seglist, const Circuit& ckt, const SubCkt& sckt) {
+	std::vector<segment<N,T> > segs;
+	// Start at all nodes.
+	for (int gid = 0; gid < sckt.size(); gid++) {
+		const NODEC& gate = sckt[gid];
+		segment<N, T> tmp;
+		tmp.key.num[0] = gid;
+		if (N > 1) {
+			for (unsigned int j = 0; j < gate.fot.size(); j++) {
+				if (sckt.in(gate.fot.at(j).second) < 0) continue;
+				tmp.key.num[1] = sckt.reverse_ref(gate.fot.at(j).second);
+				descendSegment(ckt, sckt, ckt.at(gate.fot.at(j).second), 1, gate.fot.at(j).second, tmp, &segs);
+			}
+		} else {
+			segs.push_back(tmp);
+		}
+	}
+	// done copying 
+	segment<N, T> tmp;
+	tmp.pattern.x = -1;
+	tmp.pattern.y = -1;
+	for (int i = 0; i < N; i++) {
+		tmp.key.num[i] = ckt.size();
+	}
+	segs.push_back(tmp);
+	if (*seglist == NULL) {
+		*seglist = (segment<N,T>*)malloc(sizeof(segment<N,T>)*segs.size());
+	} else {
+		*seglist = (segment<N,T>*)realloc(*seglist, sizeof(segment<N,T>)*segs.size());
+	}
+	for (unsigned int i = 0; i < segs.size(); i++) {
+		(*seglist)[i] = segs[i];
+	}
+}
 #ifdef __CUDACC__
 template <int N, class T>
  void generateDcSegmentList(dc_segment<N,T>& seglist, const Circuit& ckt, const T ival) {
