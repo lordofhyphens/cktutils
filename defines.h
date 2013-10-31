@@ -9,7 +9,7 @@
 	#include <iomanip>
 	#include <iostream>
 	#include <fstream>
-	#define DPRINT(...) fprintf(stderr, __VA_ARGS__)
+	#define DPRINT(...) if (verbose_flag) fprintf(stderr, __VA_ARGS__)
 #endif // DPRINT definition
 #define LOGEXEC 
 #ifdef NDEBUG 
@@ -64,6 +64,7 @@
 
 const unsigned int MAX_BLOCKS = 65535;
 const unsigned int SEGMENT_LENGTH = 6;
+extern int verbose_flag;
 #define OUTJUST 3
 
 #ifdef __CUDACC__ 
