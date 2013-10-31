@@ -110,7 +110,7 @@ inline void descendSegment(const Circuit& ckt, const SubCkt& sckt, const NODEC& 
 	}
 }
 template<int N, class T>
-inline void descendSegment(const Circuit& ckt, const NODEC& g, const int& level, const int& fin, segment<N,T> v, std::vector<segment<N,T> >* segs) {
+inline void descendSegment(const Circuit& ckt, const NODEC& g, const int& level, segment<N,T> v, std::vector<segment<N,T> >* segs) {
 	// every call represents another level
 	if (level == N-1) {
 		segs->push_back(v);
