@@ -50,9 +50,9 @@ class GPU_Data : public CPU_Data {
 	private:
 		size_t _block_size;
 		ARRAY2D<uint8_t>* _gpu; // fixed size GPU memory space.
-		uint32_t copy(uint32_t, bool coherent = false); // copy CPU to GPU. If coherent=true, performs a GPU<->CPU swap
 		size_t rows, columns, bl_width;
 	public: 
+		uint32_t copy(uint32_t, bool coherent = false); // copy CPU to GPU. If coherent=true, performs a GPU<->CPU swap
 		void clear();
 		void unload();
 		inline g_GPU_DATA gpu_pack(int ref) { g_GPU_DATA z; ARRAY2D<uint8_t> t = gpu(ref); z.pitch = t.pitch; z.width = t.width; z.height = t.height; z.data = t.data; return z; }
