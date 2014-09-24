@@ -14,7 +14,6 @@
 #include <utility>
 #include "defines.h"
 #include <stdint.h>
-#include "node.h"
 
 #define FBENCH 1 // iscas89 BENCH format.
 // NODE TYPE CONSTANTS 

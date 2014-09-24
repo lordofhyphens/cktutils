@@ -98,8 +98,7 @@ int main(int argc, char* argv[]) {
 			std::clog << "presorted benchmark " << infile << " ";
 		ckt.load(infile.c_str());
 	}
-//	ckt.print();
-//
+	ckt.print();
 
 	return 0;
 }
