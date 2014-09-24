@@ -1,4 +1,5 @@
 #include "ckt.h"
+#include <functional>
 #include <parallel/algorithm>
 typedef std::vector<NODEC>::iterator nodeiter;
 Circuit::Circuit() {
