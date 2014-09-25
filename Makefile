@@ -21,8 +21,12 @@ endif
 
 all: $(objs) 
 gpu: $(gobjs)
+libs: libcktutil.a
+
+libcktutil.a: ckt.o node.o utility.o iscas.o gzstream.o
+	ar rv $@ $?
 test: minimum_example.cc ckt.cc node.cc
 	$(CXX) $(CFLAGS) -fopenmp -std=c++11 -o $@ minimum_example.cc ckt.cc node.cc
 	
 clean:
-	rm -f *.o
+	rm -f *.o *.a
