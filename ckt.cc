@@ -285,10 +285,13 @@ void Circuit::levelize() {
 					iter->level = 0;
 					iter->placed = true;
 				} else {
+          if (verbose_flag) {
+            std::cerr << "Trying to place " << iter->name << "\n";
+          }
 					bool allplaced = true;
 					unsigned int level = 0;
 					for (unsigned int i = 0; i < iter->fin.size(); i++) {
-						allplaced = allplaced && g->at(iter->fin[i].second).placed;
+						allplaced = allplaced && (g->at(iter->fin[i].second).placed || g->at(iter->fin[i].second).typ == DFF);
 						if (level < g->at(iter->fin[i].second).level)
 							level = g->at(iter->fin[i].second).level;
 					}
