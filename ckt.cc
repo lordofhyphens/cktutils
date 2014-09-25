@@ -305,7 +305,7 @@ void Circuit::levelize() {
 	while (count_if(g->begin(),g->end(), isPlaced) > 0) {
 		for (nodeiter iter = g->begin(); iter < g->end(); iter++) {
 			if (iter->placed == false) {
-				if (iter->typ == INPT)  {
+				if (iter->typ == INPT || iter->typ == DFF)  {
 					iter->level = 0;
 					iter->placed = true;
 				} else {
