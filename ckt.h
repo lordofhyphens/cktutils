@@ -28,7 +28,8 @@
 #define BUFF 8				// BUFFER 
 #define NOT  9				// INVERTER 
 #define FROM 10				// STEM BRANCH
-#define DFF 11				// Dflipflop
+#define DFF 11				// Dflipflop, output
+#define DFF_IN 12				// Dflipflop, input
 
 struct NODEC {
 	std::string name;
@@ -46,6 +47,7 @@ struct NODEC {
 	NODEC(std::string);
 	NODEC(std::string, int type);
 	NODEC(std::string id, std::string type, int nfi, std::string finlist);
+  NODEC(std::string id, int type, int nfi, std::string finlist);
 	bool operator==(const std::string& other) const;
 	bool operator==(const NODEC& other) const;
 	bool operator<(const NODEC& other) const;

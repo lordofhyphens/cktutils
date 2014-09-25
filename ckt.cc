@@ -170,7 +170,26 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 			id.append(ext);
 			g->push_back(NODEC(id));
 			g->back().po = true;
-		} else if (buffer.find("=") != std::string::npos) {
+		} else if (buffer.find("DFF") != std::string::npos) {
+      // this needs to become 2 separate nodes, one for the input and one
+      // for the output.
+			id = buffer.substr(0,buffer.find("=")); // an input, has no fins
+			id.erase(std::remove_if(id.begin(), id.end(),isspace),id.end());
+			g->push_back(NODEC(id,DFF));
+			id = buffer.substr(0,buffer.find("=")) + "_in"; // a PO, has fins
+			id.erase(std::remove_if(id.begin(), id.end(),isspace),id.end());
+			id.append(ext);
+			front = buffer.find("(");
+			back = buffer.find(")");
+			std::string finlist = buffer.substr(front+1, back - (front+1));
+			int nfi = count_if(finlist.begin(), finlist.end(), ispunct) + 1;
+
+			if (__gnu_parallel::find(g->begin(), g->end(), id) == g->end()) { 
+				g->push_back(NODEC(id, DFF_IN, nfi, finlist));
+        g->back().po = true;
+			}
+      
+    } else if (buffer.find("=") != std::string::npos) {
 			id = buffer.substr(0,buffer.find("="));
 			id.erase(std::remove_if(id.begin(), id.end(),isspace),id.end());
 			id.append(ext);
@@ -203,17 +222,22 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 			// figure out which which node has this as a fanout.
 			buffer.append(ext);
 			nodeiter j = __gnu_parallel::find(g->begin(), g->end(), buffer);
+      if (j == g->end())
+        j = __gnu_parallel::find(g->begin(), g->end(), buffer+"_in");
 			j->nfo++;
 		}
 	}
 	std::vector<NODEC> temp_batch;
 	for (nodeiter iter = g->begin(); iter < g->end(); iter++) {
+    std::cerr << iter->finlist << "\n";
 		node.str(iter->finlist);
 		node.clear();
 		std::string newfin = "";
 		while (getline(node,buffer,',')) {
 			buffer.append(ext);
 			nodeiter j = __gnu_parallel::find(g->begin(), g->end(), buffer);
+      if (j == g->end())
+        j = __gnu_parallel::find(g->begin(), g->end(), buffer+"_in");
 			if (j->nfo < 2) {
 				iter->fin.push_back(std::make_pair(j->name, -1));
 				j->fot.push_back(std::make_pair(iter->name, -1));

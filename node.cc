@@ -9,6 +9,9 @@ NODEC::NODEC(std::string id, int type) {
 NODEC::NODEC(std::string id, std::string type, int nfi, std::string finlist) {
 	this->initialize(id, type, nfi, 0, false, finlist);
 }
+NODEC::NODEC(std::string id, int type, int nfi, std::string finlist) {
+	this->initialize(id, type, nfi, 0, false, finlist);
+}
 void NODEC::initialize(std::string id, int type, int nfi, int nfo, bool po, std::string finlist) {
 	this->name = id;
 	this->name.erase(std::remove_if(this->name.begin(), this->name.end(),isspace),this->name.end());
@@ -89,6 +92,8 @@ std::ostream& operator<<(std::ostream& outstream, const NODEC& node) {
 			outstream << "FROM\t"; break;
 		case DFF:
 			outstream << "DFF\t"; break;
+		case DFF_IN:
+			outstream << "DFF_IN\t"; break;
 		default:
 			outstream << "UNKN\t";break;
 	}
