@@ -30,7 +30,8 @@
 #define FROM 10				// STEM BRANCH
 #define DFF 11				// Dflipflop, output
 #define DFF_IN 12				// Dflipflop, input
-
+typedef std::vector<std::pair<std::string, uint32_t > > fin_t;
+typedef std::vector<std::pair<std::string, uint32_t > > fot_t;
 struct NODEC {
 	std::string name;
 	char typ;
