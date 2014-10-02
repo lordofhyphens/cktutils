@@ -1,5 +1,5 @@
 objs=ckt.o cpudata.o iscas.o node.o sort.o subckt.o utility.o vectors.o mergestate.o gzstream.o
-gobjs=gutility.o gpuckt.o gpudata.o g_subckt.o lookup.o 
+gobjs=gutility.o gpuckt.o gpudata.o g_subckt.o lookup.o g_vectors.o 
 CXX=g++
 CC=gcc
 ifndef CUDA_DIR
@@ -23,7 +23,7 @@ all: $(objs)
 gpu: $(gobjs)
 libs: libcktutil.a
 
-libcktutil.a: ckt.o node.o utility.o iscas.o gzstream.o
+libcktutil.a: ckt.o node.o utility.o iscas.o gzstream.o vectors.o
 	ar rv $@ $?
 test: minimum_example.cc ckt.cc node.cc
 	$(CXX) $(CFLAGS) -fopenmp -std=c++11 -o $@ minimum_example.cc ckt.cc node.cc
