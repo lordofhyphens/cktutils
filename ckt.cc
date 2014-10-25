@@ -175,7 +175,16 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
       // for the output.
 			id = buffer.substr(0,buffer.find("=")); // an input, has no fins
 			id.erase(std::remove_if(id.begin(), id.end(),isspace),id.end());
-			g->push_back(NODEC(id,DFF));
+      nodeiter iter;
+      if ((iter = __gnu_parallel::find(g->begin(), g->end(), id)) == g->end()) { 
+        g->push_back(NODEC(id,DFF));
+			} else {
+				// modify the pre-existing node. Node type should be unknown, and PO should be set.
+       	assert(iter->po == true);
+				assert(iter->typ == UNKN);
+				*iter = NODEC(id, DFF);
+      }
+
 			id = buffer.substr(0,buffer.find("=")) + "_in"; // a PO, has fins
 			id.erase(std::remove_if(id.begin(), id.end(),isspace),id.end());
 			id.append(ext);
