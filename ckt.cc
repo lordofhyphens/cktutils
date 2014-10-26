@@ -238,7 +238,6 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 	}
 	std::vector<NODEC> temp_batch;
 	for (nodeiter iter = g->begin(); iter < g->end(); iter++) {
-    std::cerr << iter->finlist << "\n";
 		node.str(iter->finlist);
 		node.clear();
 		std::string newfin = "";
