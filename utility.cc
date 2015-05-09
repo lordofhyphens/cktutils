@@ -43,7 +43,7 @@ float floattime(timespec time) {
 
 float elapsed(const timespec start) {
 	timespec stop;
-	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
+	clock_gettime(CLOCK_REALTIME, &stop);
 	return floattime(diff(start, stop));
 }
 int largest_size(std::vector<SubCkt>::iterator& start, std::vector<SubCkt>::iterator& end, int level) {
