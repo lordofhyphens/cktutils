@@ -94,6 +94,8 @@ std::ostream& operator<<(std::ostream& outstream, const NODEC& node) {
 			outstream << "DFF\t"; break;
 		case DFF_IN:
 			outstream << "DFF_IN\t"; break;
+    case CONST1:
+      outstream << "CONST1\t"; break;
 		default:
 			outstream << "UNKN\t";break;
 	}

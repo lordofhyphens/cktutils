@@ -1,4 +1,5 @@
 #include "ckt.h"
+#include <atomic>
 #include <functional>
 #include <parallel/algorithm>
 typedef std::vector<NODEC>::iterator nodeiter;
@@ -82,7 +83,7 @@ void Circuit::load(const char* memfile) {
 	}
 	_avg_nfo = (double)nfos / size();
 	_max_nfo = max_nfo;
-	std::cerr << nfos << "\n";
+	std::cerr << __FILE__ << ": " <<nfos << "\n";
 }
 void Circuit::load(const char* memfile, const char * ext_id) {
 	std::ifstream ifile(memfile);
@@ -140,7 +141,7 @@ void Circuit::load(const char* memfile, const char * ext_id) {
 		this->_levels = std::max(this->_levels, a->level);
 	}
 	_avg_nfo = (double)nfos / size();
-	std::cerr << nfos << "\n";
+	std::cerr << __FILE__ << ": " <<nfos << "\n";
 	_max_nfo = max_nfo;
 
 }
@@ -152,7 +153,7 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 	std::vector<NODEC>* g = new std::vector<NODEC>();
 	std::string buffer, id;
 	std::stringstream node;
-	int front, back;
+	int front = 0, back = 0;
 	while (getline(tfile,buffer)) {
 		node.str(buffer);
 		if (buffer.find("#") != std::string::npos) 
@@ -221,8 +222,7 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 			continue;
 		}
 	}
-	std::clog << "Finished reading " << g->size() << " lines from file." <<std::endl;
-	for (nodeiter iter = g->begin(); iter < g->end(); iter++) {
+	for (auto iter = g->begin(); iter < g->end(); iter++) {
 		if (iter->finlist == "")
 			continue;
 		node.str(iter->finlist);
@@ -230,7 +230,7 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 		while (getline(node,buffer,',')) {
 			// figure out which which node has this as a fanout.
 			buffer.append(ext);
-			nodeiter j = __gnu_parallel::find(g->begin(), g->end(), buffer);
+			auto j = __gnu_parallel::find(g->begin(), g->end(), buffer);
       if (j == g->end())
         j = __gnu_parallel::find(g->begin(), g->end(), buffer+"_in");
 			j->nfo++;
@@ -276,7 +276,6 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 	for (nodeiter iter = temp_batch.begin(); iter < temp_batch.end(); iter++) {
 		g->push_back(*iter);
 	}
-	std::clog << "Removing empty nodes." <<std::endl;
 	remove_if(g->begin(),g->end(),isUnknown);
 
 
@@ -284,21 +283,30 @@ void Circuit::read_bench(const char* benchfile, const char* ext) {
 	delete g;
 	g = this->graph;
 
-	std::clog << "Sorting circuit." << std::endl;
 	__gnu_parallel::sort(g->begin(), g->end(),nameSort);
-	std::clog << "Removing duplicate nodes." << std::endl;
 	std::vector<NODEC>::iterator it = unique(g->begin(),g->end(),isDuplicate);
 	g->resize(it - g->begin());
 	
-	std::clog << "Annotating circuit." << std::endl;
 	annotate(g);
 
-	std::clog << "Levelizing circuit." << std::endl;
 	this->levelize();
-	std::clog << "Sorting circuit." << std::endl;
 	__gnu_parallel::sort(g->begin(), g->end());
-	std::clog << "Annotating circuit." << std::endl;
 	annotate(g);
+}
+
+// randomly change the type up to n gates with probability p. 
+void Circuit::tweak(const int p, int n) {
+  std::random_device rd;
+  std::mt19937_64 gen(rd());
+  std::bernoulli_distribution d(1.0/(double)p);
+  std::uniform_int_distribution<> dis(2, 7);
+  for (auto& g : *graph) {
+    if (n <= 0) continue;
+    if (d(gen)) {
+      g.typ = dis(gen);
+      n--;
+    }
+  }
 }
 bool isPlaced(const NODEC& node) {
 	return (node.placed == 0);
@@ -318,7 +326,7 @@ void Circuit::levelize() {
 					iter->placed = true;
 				} else {
           if (verbose_flag) {
-            std::cerr << "Trying to place " << iter->name << "\n";
+            std::cerr << __FILE__ << ": " <<"Trying to place " << iter->name << "\n";
           }
 					bool allplaced = true;
 					unsigned int level = 0;
@@ -366,7 +374,7 @@ void Circuit::annotate(std::vector<NODEC>* g) {
 			const std::vector<NODEC>::iterator a =  __gnu_parallel::find(g->begin(),g->end(),i->first);
 			i->second = __gnu_parallel::count_if(g->begin(), a, Yes);
 		}
-		DPRINT("Finished node %s, %lu/%lu\n", iter->name.c_str(), std::distance(g->begin(),iter), g->size());
+		DPRINT("%s: Finished node %s, %lu/%lu\n", __FILE__, iter->name.c_str(), std::distance(g->begin(),iter), g->size());
 	}
 }
 inline bool isInLevel(const NODEC& node, const unsigned int& N) { return node.level == N; }
@@ -458,4 +466,4 @@ void Circuit::compute_scratchpad() {
 bool scratch_compare(const NODEC& a, const NODEC& b) {
 	return a.scratch < b.scratch;
 }
-void Circuit::reannotate() { __gnu_parallel::sort(this->graph->begin(), this->graph->end()); DPRINT("Annotating.\n"); annotate(this->graph);}
+void Circuit::reannotate() { __gnu_parallel::sort(this->graph->begin(), this->graph->end()); DPRINT("%s, Annotating.\n", __FILE__); annotate(this->graph);}

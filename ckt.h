@@ -14,8 +14,11 @@
 #include <utility>
 #include "defines.h"
 #include <stdint.h>
+#include <random>
+#include <atomic>
 
 #define FBENCH 1 // iscas89 BENCH format.
+#define BLIF 2 // Berkeley Logic Interchange format.
 // NODE TYPE CONSTANTS 
 #define UNKN 0				// unknown node
 #define INPT 1				// Primary Input
@@ -30,8 +33,9 @@
 #define FROM 10				// STEM BRANCH
 #define DFF 11				// Dflipflop, output
 #define DFF_IN 12				// Dflipflop, input
-typedef std::vector<std::pair<std::string, uint32_t > > fin_t;
-typedef std::vector<std::pair<std::string, uint32_t > > fot_t;
+#define CONST1 13     // Constant 1 node.
+using fin_t = std::vector<std::pair<std::string, uint32_t > >;
+using fot_t = std::vector<std::pair<std::string, uint32_t > >;
 struct NODEC {
 	std::string name;
 	char typ;
@@ -76,6 +80,7 @@ class Circuit {
 		void annotate(std::vector<NODEC>*);
 	public:
 		Circuit();
+    void tweak(const int, int);
 		Circuit(int type, const char* benchfile) {
 			this->graph = new std::vector<NODEC>();
 			this->_levels = 1;
@@ -93,6 +98,7 @@ class Circuit {
 		inline size_t levels() const { return this->_levels;}
 		// returns the average fan-out of nodes in the ckt, a useful statistic to have.
 		inline double avg_nfo() const { return _avg_nfo;}
+    inline void clear() { graph->clear(); }
 		inline uint32_t max_nfo() const { return _max_nfo;}
 
 		size_t max_level_pair();
