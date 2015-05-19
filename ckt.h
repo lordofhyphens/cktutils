@@ -93,6 +93,12 @@ class Circuit {
 		void print() const;
 		inline NODEC& at(int node) const { return this->graph->at(node);}
 		inline NODEC& operator[](int node) const { return this->graph->at(node);}
+    inline size_t pos(const NODEC& node) const {
+      auto t = std::find(graph->begin(), graph->end(), node);
+      if (t != graph->end())
+        return std::distance(graph->begin(), t);
+      else return graph->size();
+    }
 		// returns the number of levels in the circuit from PIs to POs. 
 		// Any two nodes in the same level are independent of each other.
 		inline size_t levels() const { return this->_levels;}

@@ -102,13 +102,13 @@ std::ostream& operator<<(std::ostream& outstream, const NODEC& node) {
 	outstream << (node.po == true ? "Yes" : "No" ) << "\t" << node.level << "\t" << node.nfi << "\t" << node.nfo << "\t" << node.finlist << "\t\t";
 	std::vector< std::string >::iterator iter;
 	for (unsigned int i = 0; i < node.fin.size(); i++) {
-		outstream << node.fin[i].first;
+		outstream << node.fin[i].first <<";" << node.fin[i].second;
 		if (i != node.fin.size()-1)
 			outstream << ",";
 	}
 	outstream << " | ";
 	for (unsigned int i = 0; i < node.fot.size(); i++) {
-		outstream << node.fot[i].first;
+		outstream << node.fot[i].first << ";" << node.fot[i].second;
 		if (i != node.fot.size()-1)
 			outstream << ",";
 	}
