@@ -1,7 +1,11 @@
 #include "ckt.h"
 #include <atomic>
 #include <functional>
-#include <parallel/algorithm>
+#ifndef __clang__ 
+	#include <parallel/algorithm>
+#else
+	#define __gnu_parallel std 
+#endif
 typedef std::vector<NODEC>::iterator nodeiter;
 Circuit::Circuit() {
 	this->graph = new std::vector<NODEC>();

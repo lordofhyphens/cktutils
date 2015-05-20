@@ -1,6 +1,10 @@
 #include "subckt.h"
 #include <algorithm>
-#include <parallel/algorithm>
+#ifndef __clang__ 
+	#include <parallel/algorithm>
+#else
+	#define __gnu_parallel std 
+#endif
 
 SubCkt::SubCkt(const Circuit& ckt) : _ckt(ckt) {
 	_flat = NULL;
