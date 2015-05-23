@@ -1,7 +1,7 @@
 objs=ckt.o cpudata.o iscas.o node.o sort.o subckt.o utility.o vectors.o mergestate.o gzstream.o
 gobjs=gutility.o gpuckt.o gpudata.o g_subckt.o lookup.o g_vectors.o 
-CXX=g++
-CC=gcc
+CXX=clang++
+CC=clang
 ifndef CUDA_DIR
 	CUDA_DIR=/opt/net/apps/cuda-5.0
 endif
