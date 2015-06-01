@@ -12,6 +12,8 @@ CC=clang
 CXXFLAGS+= -O3 -mtune=native $(shell $$CXXFLAGS) -g -Wall -std=c++11 -march=native -fopenmp $(CPPUTEST_FLAGS)
 
 TEST=$(foreach test,$(objs:.o=_test.cpp) AllTests.cpp,tests/${test})
+TEST_H=$(objs:.o=.h)
+
 
 ifndef CUDA_DIR
 	CUDA_DIR=/opt/net/apps/cuda-5.0
@@ -34,6 +36,9 @@ endif
 
 AllTests.o: $(TEST)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPPUTEST_FLAGS) -c $^ -o $@
+
+tests/logic_cpp.o: tests/logic_cpp.cpp logic.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPPUTEST_FLAGS) $(LDFLAGS) -L${CPPUTEST_HOME}/lib $^ $(LIBS) $(CPPUTEST_LIBS) -o $^ 
 
 all: $(objs) 
 gpu: $(gobjs)
