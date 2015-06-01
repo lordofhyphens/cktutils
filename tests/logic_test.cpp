@@ -22,6 +22,8 @@ TEST_GROUP(LB_BASIC)
     block1 = std::unique_ptr<LogicBlock>(new LogicBlock("G0"));
     block2 = std::unique_ptr<LogicBlock>(new LogicBlock("G1"));
     block3 = std::unique_ptr<LogicBlock>(new LogicBlock("G2"));
+    block2->add_fanin(*block1);
+    block3->add_fanin(*block2);
   }
 
   void teardown()
@@ -33,4 +35,14 @@ TEST(LB_BASIC, get_name) {
   CHECK_EQUAL("G0", block1->name());
   CHECK_EQUAL("G1", block2->name());
   CHECK_EQUAL("G2", block3->name());
+}
+
+TEST(LB_BASIC, fanins) {
+  CHECK_EQUAL(0, block1->nfi());
+  CHECK_EQUAL(1, block2->nfi());
+
+  CHECK_EQUAL("G0", block2->fin.at(0));
+
+  CHECK_EQUAL(1, block3->nfi());
+  CHECK_EQUAL("G1", block3->fin.at(0));
 }
