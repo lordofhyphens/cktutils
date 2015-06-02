@@ -10,7 +10,7 @@ using std::end;
 using std::move;
 using std::forward;
 
-enum class LogicType { And, Or, Not, Xor, Xnor, Buff, Inpt, DFF, DFF_in, Unknown};
+enum class LogicType { And, Or, Not, Xor, Xnor, Buff, Input, DFF, DFF_in, Unknown};
 using logic_t = LogicType;
 
 using LogicType::Unknown;

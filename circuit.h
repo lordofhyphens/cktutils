@@ -24,6 +24,8 @@ class Circuit
     Circuit& operator=(const Circuit&) = default; 
     Circuit(const Circuit&) = default;
 
+    void emplace(LogicBlock&& lb) { netlist.emplace_back(std::forward<LogicBlock>(lb)); }
+
     vector<LogicBlock> netlist; 
   protected:
     string _name;
