@@ -26,9 +26,19 @@ class Circuit
 
     void emplace(LogicBlock&& lb) { netlist.emplace_back(std::forward<LogicBlock>(lb)); }
 
-    vector<LogicBlock> netlist; 
+    void add(const LogicBlock& lb) { netlist.push_back(lb); }
+
+    LogicBlock& at(size_t pos) { return netlist.at(pos); }
+
+    inline vector<LogicBlock>::iterator begin() { return netlist.begin(); }
+    inline vector<LogicBlock>::const_iterator cbegin() const { return netlist.cbegin(); }
+
+    inline vector<LogicBlock>::iterator end() { return netlist.end(); }
+    inline vector<LogicBlock>::const_iterator cend() const { return netlist.cend(); }
+
   protected:
     string _name;
+    vector<LogicBlock> netlist; 
 };
 
 #endif // CIRCUIT_H
