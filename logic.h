@@ -38,7 +38,7 @@ class LogicBlock
 
     LogicType type;
     bool primary_out;
-  private:    
+  protected:    
     const std::string _name;
 };
 
