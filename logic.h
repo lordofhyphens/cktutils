@@ -34,7 +34,7 @@ class LogicBlock
     { other.type = logic_t::Unknown; }
 
     LogicBlock(const LogicBlock&) = default; // copy constructor
-    LogicBlock& (const LogicBlock&) = default; // copy assignment
+    LogicBlock& operator=(const LogicBlock&) = default; // copy assignment
 
     LogicType type;
     bool primary_out;
