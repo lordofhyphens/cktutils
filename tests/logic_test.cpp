@@ -93,3 +93,15 @@ TEST(LB_BASIC, move)
   CHECK(Unknown == block3->type);
   CHECK(t3.primary_out);
 }
+TEST(LB_BASIC, copy)
+{
+  LogicBlock t3 = (*block3);
+
+  CHECK_EQUAL("G2", t3.name());
+  CHECK_EQUAL(1, t3.nfi());
+  CHECK_EQUAL("G1", t3.fin.at(0));
+
+  CHECK_EQUAL(1, block3->nfi());
+  CHECK(logic_t::Buff == block3->type);
+  CHECK(t3.primary_out);
+}
