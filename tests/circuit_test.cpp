@@ -23,3 +23,9 @@ TEST(CKT_BASIC, SayMyName)
 {
   CHECK_EQUAL("c17", ckt->name());
 }
+
+TEST(CKT_BASIC, equality)
+{
+  Circuit ckt2("c17");
+  CHECK(ckt2 == *ckt);
+}
