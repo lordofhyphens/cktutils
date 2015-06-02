@@ -3,7 +3,7 @@ CPPUTEST_FLAGS:=-I$(CPPUTEST_HOME)/include
 CPPUTEST_LIBS:=-lCppUTest -lCppUTestExt
 
 #objs=ckt.o cpudata.o iscas.o node.o sort.o subckt.o utility.o vectors.o mergestate.o gzstream.o
-objs=logic.o
+objs=logic.o circuit.o
 
 gobjs=gutility.o gpuckt.o gpudata.o g_subckt.o lookup.o g_vectors.o 
 CXX=clang++
