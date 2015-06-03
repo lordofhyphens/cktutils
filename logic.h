@@ -33,8 +33,11 @@ class LogicBlock
     LogicBlock(LogicBlock&& other) : fin(move(other.fin)), type(move(other.type)), primary_out(move(other.primary_out)), _name(std::move(other._name)) 
     { other.type = logic_t::Unknown; }
 
-    LogicBlock(const LogicBlock&) = default; // copy constructor
-    LogicBlock& operator=(const LogicBlock&) = default; // copy assignment
+    LogicBlock(const LogicBlock& z) : _name(z._name), type(z.type), fin(z.fin) { }
+    LogicBlock operator=(LogicBlock z)
+    {
+      return std::forward<LogicBlock>(LogicBlock(z));
+    }
 
     LogicType type;
     bool primary_out;
