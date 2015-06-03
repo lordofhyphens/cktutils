@@ -27,7 +27,9 @@ class Circuit
     Circuit& operator=(const Circuit&) = default; 
     Circuit(const Circuit&) = default;
 
+    
     void emplace_back(LogicBlock&& lb) { netlist.emplace_back(std::forward<LogicBlock>(lb)); }
+    inline void emplace_back(const vector<LogicBlock>& v) { for (auto i : v) { emplace_back(std::forward<LogicBlock>(i)); } }
 
     void add(const LogicBlock& lb) { netlist.push_back(lb); }
 

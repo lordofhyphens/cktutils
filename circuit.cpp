@@ -62,7 +62,7 @@ void Circuit::read_blif(const string& filename)
   std::tuple<int, std::string> products = make_tuple(0, std::string(""));
   std::string outname = "";
   std::vector<LogicBlock> sum;
-  bool single_minterm_product = false;
+  auto top_gate = netlist.begin();
   for( auto& line_orig: lines(file) )
   {
     auto line = normalize(line_orig);
@@ -144,8 +144,13 @@ void Circuit::read_blif(const string& filename)
       }
       outname = minterm_list.back();
       minterm_list.pop_back();
+      netlist.emplace_back(LogicBlock{outname,LogicType::And});
+      top_gate = netlist.end() - 1;
       had_minterm = true;
       get<0>(products) = 0;
+      if (minterm_list.size() == 1) {
+        top_gate->type = LogicType::Buff;
+      }
       continue;
     }
     // otherwise, we are tracking minterms from a previous gate
@@ -157,22 +162,26 @@ void Circuit::read_blif(const string& filename)
       {
         case '0': // inverted var/gate appears
           {
-            product.emplace_back(LogicBlock{*term_it+"_NOT"});
+            product.emplace_back(static_cast<string>(*term_it+"_NOT"));
             break;
           }
         case '1': // positive var/gate appears
           {
-            product.emplace_back(LogicBlock{*term_it});
+            product.emplace_back(static_cast<string>(*term_it));
             break;
           }
-        case default: // ignore, var doesn't appear
+        default: // ignore, var doesn't appear
           break;
       }
       term_it++;
     }
-
-    sum.emplace_back(product);
-    for (auto p : product) { sum.back().add_fanin(p); }
+    if (product.size() == 1) {
+      top_gate->add_fanin(product.at(0));
+      continue;
+    }
+    netlist.emplace_back(LogicBlock{static_cast<string>(top_gate->name() + "_" + std::to_string(top_gate->nfi())), LogicType::Or});
+    for (auto p : product) { netlist.back().add_fanin(p); }
+    top_gate->add_fanin(netlist.back().name());
 
   } 
   std::sort(netlist.begin(), netlist.end());
