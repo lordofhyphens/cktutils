@@ -51,7 +51,7 @@ testsuite: $(subst explore.o,,$(objs)) $(TEST:.cpp=.o)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPPUTEST_FLAGS) $(LDFLAGS) -L${CPPUTEST_HOME}/lib $^ $(LIBS) $(CPPUTEST_LIBS) -o $@ 
 	
 clean:
-	rm -f *.o *.a
+	rm -f *.o *.a tests/*.o testsuite
 
 test: testsuite
 	./$<

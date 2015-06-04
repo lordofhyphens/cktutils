@@ -71,12 +71,15 @@ TEST_GROUP(CKT_READ)
 TEST(CKT_READ, read_blif_s27)
 {
   ckt->read_blif("tests/s27.blif");
-  for (auto i : *ckt)
+  for (auto &i : *ckt)
   {
-    std::cerr << i.name() << "\n";
+    std::cerr << "Node ";
+    std::cerr << i.print();
+    std::cerr << "\n";
+    
   }
 
-  CHECK_EQUAL(35, ckt->size());
+  CHECK_EQUAL(37, ckt->size());
   auto flop_it = ckt->flops.cbegin();
   CHECK(*flop_it == (std::pair<string,string>{"G5", "G10"}));
   flop_it++;

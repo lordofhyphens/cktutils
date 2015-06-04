@@ -21,7 +21,9 @@ TEST_GROUP(LB_BASIC)
   {
     block1 = std::unique_ptr<LogicBlock>(new LogicBlock("G0"));
     block2 = std::unique_ptr<LogicBlock>(new LogicBlock("G1", logic_t::Not));
+    block2->level = 1;
     block3 = std::unique_ptr<LogicBlock>(new LogicBlock("G2", logic_t::Buff));
+    block3->level = 2;
     block2->add_fanin(*block1);
     block3->add_fanin(*block2);
     block3->primary_out = true;
@@ -70,7 +72,7 @@ TEST(LB_BASIC, ordering)
   CHECK(*block1 < *block2);
   CHECK(*block2 < *block3);
 
-  CHECK_FALSE(*block1 < *block3);
+  CHECK(*block1 < *block3);
 }
 
 TEST(LB_BASIC, equality)
@@ -90,7 +92,7 @@ TEST(LB_BASIC, move)
   CHECK_EQUAL("G1", t3.fin.at(0));
 
   CHECK_EQUAL(0, block3->nfi());
-  CHECK(Unknown == block3->type);
+  CHECK("" == block3->name());
   CHECK(t3.primary_out);
 }
 TEST(LB_BASIC, copy)
