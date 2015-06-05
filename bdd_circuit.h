@@ -10,6 +10,7 @@
 #include "circuit.h"
 
 using std::vector;
+using std::string;
 
 class BDDCircuit : public Circuit
 {
@@ -21,6 +22,8 @@ class BDDCircuit : public Circuit
     vector<BDD> bdd_po;
 
     void to_bdd();
+  private:
+    vector<BDD> bdd_netlist; 
 };
 
 

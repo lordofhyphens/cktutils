@@ -13,7 +13,7 @@ using std::end;
 using std::move;
 using std::forward;
 
-enum class LogicType { And, Or, Not, Xor, Xnor, Buff, Input, DFF, DFF_in, Unknown};
+enum class LogicType { And, Nand, Or, Nor, Not, Xor, Xnor, Buff, Input, DFF, DFF_in, Unknown};
 using logic_t = LogicType;
 
 using LogicType::Unknown;
@@ -44,6 +44,22 @@ class LogicBlock
     { 
       std::stringstream out("");
       out << _name << ": " << level << " ";
+      switch(type)
+      {
+        case LogicType::Buff: out << "Buff ";break;
+        case LogicType::Or: out << "Or ";break;
+        case LogicType::Xor: out << "Xor ";break;
+        case LogicType::And: out << "And ";break;
+        case LogicType::Nand: out << "Nand ";break;
+        case LogicType::Input: out << "Input ";break;
+        case LogicType::DFF: out << "DFF ";break;
+        case LogicType::DFF_in: out << "Dff_in ";break;
+        case LogicType::Not: out << "Not ";break;
+        case LogicType::Xnor: out << "Xnor ";break;
+        case LogicType::Nor: out << "Nor ";break;
+        case LogicType::Unknown: out << "Unknown ";break;
+      }
+
       for (auto &i : fin)
       {
         out << i << " ";
