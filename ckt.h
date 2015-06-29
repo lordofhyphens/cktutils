@@ -85,6 +85,9 @@ class Circuit {
     std::vector<std::pair<std::string, std::string>> flops;
 	public:
 		Circuit();
+    Circuit(const Circuit& other) :  graph(new std::vector<NODEC>(other.graph->begin(), other.graph->end(),other.graph->get_allocator())),  
+    name(other.name),
+      _avg_nfo(other._avg_nfo), _max_nfo(other._max_nfo), _levels(other._levels) { }
     void tweak(const int, int);
 		Circuit(int type, const char* benchfile) {
 			this->graph = new std::vector<NODEC>();
