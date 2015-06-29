@@ -36,6 +36,8 @@
 #define CONST1 13     // Constant 1 node.
 using fin_t = std::vector<std::pair<std::string, uint32_t > >;
 using fot_t = std::vector<std::pair<std::string, uint32_t > >;
+using std::make_pair;
+
 struct NODEC {
 	std::string name;
 	char typ;
@@ -59,11 +61,13 @@ struct NODEC {
 	bool operator>(const NODEC& other) const;
 	bool operator<=(const NODEC& other) const;
 	bool operator>=(const NODEC& other) const;
+  void add_fanin(std::string new_fin) { if (finlist == "") { finlist += new_fin + ","; } else { finlist += new_fin; };}
 	private:
 		void initialize(std::string id, int type, int nfi, int nfo, bool po, std::string finlist);
 		void initialize(std::string id, std::string type, int nfi, int nfo, bool po, std::string finlist);
 		void load(std::string attr);
 };
+
 
 bool scratch_compare(const NODEC& a, const NODEC& b);
 class Circuit {
@@ -78,6 +82,7 @@ class Circuit {
 		double _max_nfo;
 		unsigned int _levels;
 		void annotate(std::vector<NODEC>*);
+    std::vector<std::pair<std::string, std::string>> flops;
 	public:
 		Circuit();
     void tweak(const int, int);

@@ -10,7 +10,20 @@
 
 struct line_t : std::string {
      friend std::istream & operator>>(std::istream& is, line_t& line) {
-         return std::getline(is, line);
+         std::getline(is,line);
+         line_t tmp = line;
+         if (line.back() == '\\')
+           tmp.pop_back();
+         while(line.back() == '\\')
+         {
+           line.pop_back();
+           std::getline(is, line);
+           tmp += line;
+           if (line.back() == '\\')
+             tmp.pop_back();
+         }
+         line = tmp;
+         return is;
      }
 };
  
